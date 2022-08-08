@@ -6,11 +6,11 @@ require 'support/models'
 RSpec.describe BasicModel do
   before do
     BasicModel.insert_all([
-                            { name: 'a', position: 0 },
-                            { name: 'b', position: 1 },
-                            { name: 'c', position: 2 },
-                            { name: 'd', position: 3 }
-                          ])
+      { name: 'a', position: 0 },
+      { name: 'b', position: 1 },
+      { name: 'c', position: 2 },
+      { name: 'd', position: 3 }
+    ])
   end
 
   let(:names) { BasicModel.order(:position).pluck(:name) }

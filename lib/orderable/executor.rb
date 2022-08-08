@@ -2,51 +2,88 @@
 
 module Orderable
   class Executor
-    attr_reader :record, :field, :value, :scope
+    SEQUENCE_NAME = 'orderable'
 
-    def initialize(record, field, scope)
-      @record = record
+    attr_reader :model, :field, :scope
+
+    def initialize(model, field, scope)
+      @model = model
       @field = field.to_s
-      @value = record[field]
       @scope = scope.is_a?(Array) ? scope : [scope]
     end
 
-    def expand
-      records = affected_records(above: value)
+    def on_create(record)
+      records = affected_records(record, above: record[field])
       push(records)
     end
 
-    def shift
+    def on_update(record)
       return unless record.changed.include?(field)
 
       above, below = record.changes[field].sort
       by = record.changes[field].reduce(&:<=>)
 
-      records = affected_records(above: above, below: below)
+      records = affected_records(record, above: above, below: below)
       push(records, by: by)
     end
 
-    def collapse
-      records = affected_records(above: value)
+    def on_destroy(record)
+      records = affected_records(record, above: record[field])
       push(records, by: -1)
+    end
+
+    def validate_less_than_or_equal_to(record)
+      max_value = affected_records(record).count
+      max_value -= 1 unless record.new_record?
+      return if record[field] <= max_value
+
+      record.errors.add(field, :less_than_or_equal_to, count: max_value)
+    end
+
+    def reset
+      raise(AdapterError, model.connection.adapter_name) if model.connection.adapter_name != 'PostgreSQL'
+
+      with_sequence(scope_groups) do |scope_group|
+        model.where(scope_group).order(field).update_all("#{field} = nextval('#{SEQUENCE_NAME}')")
+      end
     end
 
     private
 
-    def affected_records(above: nil, below: nil)
-      records = record.class
-      records = records.where(scope_query) if scope.present?
+    def affected_records(record, above: nil, below: nil)
+      raise(AttributeError, field) unless model.column_for_attribute(field).type == :integer
+
+      records = model.where(scope_query(record))
       records = records.where("#{field} >= ?", above) if above
       records = records.where("#{field} <= ?", below) if below
       records.all
     end
 
-    def scope_query
+    def scope_query(record)
       scope.index_with { |scope_field| record[scope_field] }
     end
 
     def push(records, by: 1)
       records.update_all("#{field} = #{field} + #{by}")
+    end
+
+    def scope_groups
+      return [nil] unless scope
+
+      model.group(scope).count.map { |(values, _count)| scope.zip(values).to_h }
+    end
+
+    def with_sequence(collection)
+      return unless block_given?
+
+      model.connection.execute("CREATE TEMP SEQUENCE #{SEQUENCE_NAME} MINVALUE 0")
+
+      collection.each_with_index do |element, index|
+        model.connection.execute("ALTER SEQUENCE #{SEQUENCE_NAME} RESTART") unless index.zero?
+        yield(element)
+      end
+
+      model.connection.execute("DROP SEQUENCE #{SEQUENCE_NAME}")
     end
   end
 end

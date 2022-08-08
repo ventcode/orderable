@@ -5,8 +5,8 @@ require_relative 'lib/orderable/version'
 Gem::Specification.new do |spec|
   spec.name          = 'orderable'
   spec.version       = Orderable::VERSION
-  spec.authors       = ['kruczek']
-  spec.email         = ['piotr.kruczek@ynd.co']
+  spec.authors       = ['Piotr Kruczek']
+  spec.email         = ['piotr.kruczek@ventcode.com']
 
   spec.summary       = 'Orderable summary'
   # spec.description   = "TODO: Write a longer description or delete this line."
@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Uncomment to register a new dependency of your gem
-  spec.add_dependency 'activerecord', '~> 6.0'
+  spec.add_dependency 'activerecord', '>= 6.0'
 
   # For more information and examples about making a new gem, checkout our
   # guide at: https://bundler.io/guides/creating_gem.html

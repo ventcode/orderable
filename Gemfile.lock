@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     orderable (0.1.0)
-      activerecord (~> 6.0)
+      activerecord (>= 6.0)
 
 GEM
   remote: https://rubygems.org/

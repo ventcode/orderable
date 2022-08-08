@@ -1,12 +1,13 @@
 AllCops:
   NewCops: enable
-
 Style/Documentation:
   Enabled: false
-
 Layout/LineLength:
   Max: 120
-
 Metrics/BlockLength:
   Exclude:
     - spec/**/*
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
