@@ -10,18 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_19_081013) do
-
-  create_table "addons", force: :cascade do |t|
-    t.string "name", null: false
-    t.integer "position", default: 0, null: false
-    t.integer "basic_model_id"
-  end
+ActiveRecord::Schema.define(version: 2022_08_19_131546) do
 
   create_table "basic_models", force: :cascade do |t|
     t.string "name", null: false
     t.integer "position", default: 0, null: false
   end
 
-  add_foreign_key "addons", "basic_models"
+  create_table "scopes_models", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "kind", default: "alpha", null: false
+    t.string "group", default: "a", null: false
+  end
+
 end
