@@ -3,7 +3,7 @@
 require 'support/database_helper'
 require 'support/models'
 
-RSpec.describe BasicModel do
+RSpec.describe 'Order modification' do
   before do
     BasicModel.insert_all([
       { name: 'a', position: 0 },
@@ -29,7 +29,7 @@ RSpec.describe BasicModel do
   end
 
   context 'when updating to a higher position' do
-    before { described_class.find_by(name: 'a').update(position: 2) }
+    before { BasicModel.find_by(name: 'a').update(position: 2) }
 
     it 'shifts objects around' do
       expect(names).to eq(%w[b c a d])
@@ -41,7 +41,7 @@ RSpec.describe BasicModel do
   end
 
   context 'when updating to a lower position' do
-    before { described_class.find_by(name: 'c').update(position: 0) }
+    before { BasicModel.find_by(name: 'c').update(position: 0) }
 
     it 'shifts objects around' do
       expect(names).to eq(%w[c a b d])
@@ -53,7 +53,7 @@ RSpec.describe BasicModel do
   end
 
   context 'when destroying a record' do
-    before { described_class.find_by(name: 'c').destroy }
+    before { BasicModel.find_by(name: 'c').destroy }
 
     it 'pulls all later positions' do
       expect(names).to eq(%w[a b d])
