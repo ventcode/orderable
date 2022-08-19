@@ -14,3 +14,12 @@ end
 class GroupScopeModel < ScopesModel 
   orderable :position, scope: :group
 end
+
+class SingleElementScope < BasicModel
+  attr_reader :executor
+  include Orderable
+
+  before_create do
+    @executor = Executor.new(self, :position, 'scope')
+  end
+end
