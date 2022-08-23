@@ -16,10 +16,9 @@ class GroupScopeModel < ScopesModel
 end
 
 class SingleElementScope < BasicModel
-  attr_reader :executor
   include Orderable
 
-  before_create do
-    @executor = Executor.new(self, :position, 'scope')
+  def executor
+    executor ||= Orderable::Executor.new(self, :position, scope: 'somecope')
   end
 end
