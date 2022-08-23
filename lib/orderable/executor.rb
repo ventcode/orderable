@@ -70,7 +70,10 @@ module Orderable
     def scope_groups
       return [nil] unless scope
 
-      model.group(scope).count.map { |(values, _count)| scope.zip(values).to_h }
+      model.group(scope).count.map do |(values, _count)|
+        values = [values] unless values.is_a?(Array)
+        scope.zip(values).to_h 
+      end
     end
 
     def with_sequence(collection)
