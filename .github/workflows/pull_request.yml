@@ -35,6 +35,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
+      RAILS_ENV: test
       POSTGRES_USERNAME: postgres
       POSTGRES_PASSWORD: postgres
     steps:
