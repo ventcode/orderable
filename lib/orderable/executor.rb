@@ -72,7 +72,7 @@ module Orderable
 
       model.group(scope).count.map do |(values, _count)|
         values = [values] unless values.is_a?(Array)
-        scope.zip(values).to_h 
+        scope.zip(values).to_h
       end
     end
 

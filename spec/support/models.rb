@@ -7,11 +7,11 @@ end
 class ScopesModel < ActiveRecord::Base
 end
 
-class KindScopeModel < ScopesModel 
+class KindScopeModel < ScopesModel
   orderable :position, scope: :kind
 end
 
-class GroupScopeModel < ScopesModel 
+class GroupScopeModel < ScopesModel
   orderable :position, scope: :group
 end
 
