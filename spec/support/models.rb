@@ -16,10 +16,8 @@ class GroupScopeModel < ScopesModel
 end
 
 class SingleElementScope < BasicModel
-  include Orderable
-
   def executor
-    executor ||= Orderable::Executor.new(self, :position, scope: 'somecope')
+    Orderable::Executor.new(self, :position, scope: 'somecope')
   end
 end
 
