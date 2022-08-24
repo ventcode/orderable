@@ -1,0 +1,38 @@
+name: Pull request workflow
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  lint:
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run Rubocop
+        run: bundle exec rubocop
+
+  test:
+    name: Test suite and coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      
+      - name: Setup database
+        run: bundle exec rails db:setup
+      
+      - name: Run RSpec
+        run: bundle exec rspec -fd
