@@ -14,3 +14,9 @@ end
 class GroupScopeModel < ScopesModel
   orderable :position, scope: :group
 end
+
+class NoValidationModel < ActiveRecord::Base
+  self.table_name = 'basic_models'
+
+  orderable :position, validate: false
+end

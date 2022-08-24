@@ -2,6 +2,7 @@
 
 require 'orderable'
 require 'database_cleaner/active_record'
+require 'shoulda-matchers'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -23,5 +24,16 @@ RSpec.configure do |config|
     DatabaseCleaner.cleaning do
       example.run
     end
+  end
+
+  config.include(Shoulda::Matchers::ActiveModel, :with_validations)
+  config.include(Shoulda::Matchers::ActiveRecord, :with_validations)
+end
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :active_record
+    with.library :active_model
   end
 end
