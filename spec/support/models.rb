@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 class BasicModel < ActiveRecord::Base
+  has_many :addons
+
   orderable :position
 end
 
-class ScopesModel < ActiveRecord::Base
-end
+class NoValidationModel < ActiveRecord::Base
+  self.table_name = 'basic_models'
 
-class ArrayScopeModel < ScopesModel
-  orderable :position, scope: [:kind, :group]
-end
+  orderable :position, validate: false
+class Addon < ActiveRecord::Base
+  belongs_to :BasicModel
 
-class GroupScopeModel < ScopesModel
-  orderable :position, scope: :group
+  orderable :position, scope: :basic_model_id
 end
