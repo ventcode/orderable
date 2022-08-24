@@ -1,24 +1,26 @@
 # frozen_string_literal: true
 
 class BasicModel < ActiveRecord::Base
+  has_many :addons
+
   orderable :position
 end
 
 class ScopesModel < ActiveRecord::Base
 end
 
-class KindScopeModel < ScopesModel
-  orderable :position, scope: :kind
+class ArrayScopeModel < ScopesModel
+  orderable :position, scope: %i[kind group]
 end
 
 class GroupScopeModel < ScopesModel
   orderable :position, scope: :group
 end
 
-class SingleElementScope < BasicModel
-  def executor
-    Orderable::Executor.new(self, :position, scope: 'somecope')
-  end
+class NoValidationModel < ActiveRecord::Base
+  self.table_name = 'basic_models'
+
+  orderable :position, validate: false
 end
 
 class Executor < Orderable::Executor
