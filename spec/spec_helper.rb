@@ -26,8 +26,8 @@ RSpec.configure do |config|
     end
   end
 
-  config.include(Shoulda::Matchers::ActiveModel, type: :model)
-  config.include(Shoulda::Matchers::ActiveRecord, type: :model)
+  config.include(Shoulda::Matchers::ActiveModel, :with_validations)
+  config.include(Shoulda::Matchers::ActiveRecord, :with_validations)
 end
 
 Shoulda::Matchers.configure do |config|
