@@ -7,11 +7,11 @@ end
 class ScopesModel < ActiveRecord::Base
 end
 
-class KindScopeModel < ScopesModel 
+class KindScopeModel < ScopesModel
   orderable :position, scope: :kind
 end
 
-class GroupScopeModel < ScopesModel 
+class GroupScopeModel < ScopesModel
   orderable :position, scope: :group
 end
 
@@ -20,5 +20,26 @@ class SingleElementScope < BasicModel
 
   def executor
     executor ||= Orderable::Executor.new(self, :position, scope: 'somecope')
+  end
+end
+
+class Executor < Orderable::Executor
+end
+
+class MultiDataBaseModel < ScopesModel
+  orderable :position, scope: :kind
+
+  def self.set_db_to_sqlite
+    ActiveRecord::Base.establish_connection(
+      adapter: 'sqlite3',
+      database: 'db/development.sqlite3'
+    )
+  end
+
+  def self.set_db_to_postgresql
+    ActiveRecord::Base.establish_connection(
+      adapter: 'postgresql',
+      database: 'orderable_development'
+    )
   end
 end
