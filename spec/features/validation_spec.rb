@@ -3,7 +3,7 @@
 require 'support/database_helper'
 require 'support/models'
 
-RSpec.describe 'Validation', type: :model do
+RSpec.describe 'Configuration option :validate', :with_validations do
   context 'when validate option is set to true' do
     subject { BasicModel.new(name: 'a', position: 0) }
 
