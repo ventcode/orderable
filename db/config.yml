@@ -1,8 +1,8 @@
 development:
   adapter: postgresql
-  database: orderable_development
-  pool: 5
-  timeout: 5000
   host: <%= ENV.fetch('POSTGRES_HOST', 'localhost') %>
+  port: <%= ENV.fetch('POSTGRES_PORT', 5432) %>
+  pool: <%= ENV.fetch('RAILS_MAX_THREADS', 5) %>
   username: <%= ENV['POSTGRES_USERNAME'] %>
   password: <%= ENV['POSTGRES_PASSWORD'] %>
+  database: <%= ENV.fetch('POSTGRES_DATABASE', 'orderable_development') %>
