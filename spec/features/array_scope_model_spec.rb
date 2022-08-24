@@ -23,16 +23,16 @@ RSpec.describe ArrayScopeModel do
 
   let(:alpha_a_names) { ArrayScopeModel.where(kind: 'alpha', group: 'a').order(:position).pluck(:name) }
   let(:alpha_a_positions) { ArrayScopeModel.where(kind: 'alpha', group: 'a').order(:position).pluck(:position) }
-  
+
   let(:alpha_b_names) { ArrayScopeModel.where(kind: 'alpha', group: 'b').order(:position).pluck(:name) }
   let(:alpha_b_positions) { ArrayScopeModel.where(kind: 'alpha', group: 'b').order(:position).pluck(:position) }
-  
+
   let(:beta_a_names) { ArrayScopeModel.where(kind: 'beta', group: 'a').order(:position).pluck(:name) }
   let(:beta_a_positions) { ArrayScopeModel.where(kind: 'beta', group: 'a').order(:position).pluck(:position) }
-  
+
   let(:beta_b_names) { ArrayScopeModel.where(kind: 'beta', group: 'b').order(:position).pluck(:name) }
   let(:beta_b_positions) { ArrayScopeModel.where(kind: 'beta', group: 'b').order(:position).pluck(:position) }
-  
+
   context 'when creating a new record to scope' do
     before { ArrayScopeModel.create(name: 'alpha-a-3', position: 1, kind: 'alpha', group: 'a') }
 
