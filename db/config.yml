@@ -1,5 +1,7 @@
 development:
-    adapter: postgresql
-    database: orderable_development
-    pool: 5
-    timeout: 5000
+  adapter: postgresql
+  database: orderable_development
+  pool: 5
+  timeout: 5000
+  username: <%= ENV['POSTGRES_USERNAME'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
