@@ -35,7 +35,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      POSTGRES_HOSTNAME: postgres
+      POSTGRES_HOST: postgres
       POSTGRES_USERNAME: postgres
       POSTGRES_PASSWORD: postgres
     steps:

@@ -3,6 +3,6 @@ development:
   database: orderable_development
   pool: 5
   timeout: 5000
-  hostname: <%= ENV.fetch('POSTGRES_HOSTNAME', 'localhost') %>
+  host: <%= ENV.fetch('POSTGRES_HOST', 'localhost') %>
   username: <%= ENV['POSTGRES_USERNAME'] %>
   password: <%= ENV['POSTGRES_PASSWORD'] %>
