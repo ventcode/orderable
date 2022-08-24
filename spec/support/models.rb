@@ -17,6 +17,6 @@ end
 
 class SingleElementScope < BasicModel
   def executor
-    executor ||= Orderable::Executor.new(self, :position, scope: 'somecope')
+    executor = Orderable::Executor.new(self, :position, scope: 'somecope')
   end
 end
