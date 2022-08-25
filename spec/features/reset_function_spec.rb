@@ -2,6 +2,7 @@
 
 require 'support/database_helper'
 require 'support/models'
+require 'factories/factories_sharing'
 require 'factories/scopes_model'
 
 RSpec.describe Executor do
