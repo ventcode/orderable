@@ -27,7 +27,7 @@ class Executor < Orderable::Executor
 end
 
 class MultiDataBaseModel < ScopesModel
-  orderable :position, scope: :kind
+  orderable :position, scope: :group
 
   def self.set_db_to_sqlite
     ActiveRecord::Base.establish_connection(
