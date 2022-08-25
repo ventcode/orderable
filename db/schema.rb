@@ -12,9 +12,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_220_727_164_055) do
+ActiveRecord::Schema.define(version: 20_220_825_085_619) do
   create_table 'basic_models', force: :cascade do |t|
     t.string 'name', null: false
     t.integer 'position', default: 0, null: false
+  end
+
+  create_table 'no_default_models', force: :cascade do |t|
+    t.string 'name', null: false
+    t.integer 'position', null: false
   end
 end
