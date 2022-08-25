@@ -2,11 +2,12 @@
 
 module Orderable
   module ModelExtension
+    # rubocop:disable Metrics/MethodLength
     def orderable(field, scope: [], validate: true, default_push_last: true)
       executor = Executor.new(self, field, scope)
 
       class_eval do
-        after_initialize -> { self[field] = executor.get_index_for_last(self) if default_push_last }, if: :new_record?
+        after_initialize -> { executor.put_field_for_last(self) if default_push_last }, if: :new_record?
         before_create { executor.on_create(self) }
         before_update { executor.on_update(self) }
         after_destroy { executor.on_destroy(self) }
@@ -19,5 +20,6 @@ module Orderable
 
       define_singleton_method(:"reset_#{field}") { executor.reset }
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

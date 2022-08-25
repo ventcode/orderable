@@ -32,10 +32,10 @@ module Orderable
       push(records, by: -1)
     end
 
-    def get_index_for_last(record)
-      return record[field] unless record[field].nil? || !record.send("#{field}_changed?")
+    def put_field_for_last(record)
+      return unless record[field].nil? || !record.send("#{field}_changed?")
 
-      affected_records(record).count
+      record[field] = affected_records(record).count
     end
 
     def validate_less_than_or_equal_to(record)
