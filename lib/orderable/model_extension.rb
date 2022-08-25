@@ -2,10 +2,11 @@
 
 module Orderable
   module ModelExtension
-    def orderable(field, scope: [], validate: true)
+    def orderable(field, scope: [], validate: true, default_push_last: true)
       executor = Executor.new(self, field, scope)
 
       class_eval do
+        after_initialize -> { self[field] = executor.get_index_for_last(self) if default_push_last }, if: :new_record?
         before_create { executor.on_create(self) }
         before_update { executor.on_update(self) }
         after_destroy { executor.on_destroy(self) }

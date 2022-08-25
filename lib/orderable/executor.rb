@@ -32,7 +32,15 @@ module Orderable
       push(records, by: -1)
     end
 
+    def get_index_for_last(record)
+      return record[field] unless record[field].nil? || !record.send("#{field}_changed?")
+
+      affected_records(record).count
+    end
+
     def validate_less_than_or_equal_to(record)
+      return record.errors.add(field, :blank) if record[field].nil?
+
       max_value = affected_records(record).count
       max_value -= 1 unless record.new_record?
       return if record[field] <= max_value
