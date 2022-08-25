@@ -41,6 +41,11 @@ GEM
     database_cleaner-core (2.0.1)
     diff-lcs (1.5.0)
     erubi (1.10.0)
+    factory_bot (6.2.1)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.2.0)
+      factory_bot (~> 6.2.0)
+      railties (>= 5.0.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     loofah (2.18.0)
@@ -102,6 +107,7 @@ GEM
     ruby-progressbar (1.11.0)
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
+    sqlite3 (1.4.4)
     standalone_migrations (6.1.0)
       activerecord (>= 4.2.7, < 6.2.0, != 5.2.3.rc1, != 5.2.3)
       railties (>= 4.2.7, < 6.2.0, != 5.2.3.rc1, != 5.2.3)
@@ -120,12 +126,14 @@ PLATFORMS
 
 DEPENDENCIES
   database_cleaner-active_record (~> 2.0, >= 2.0.1)
+  factory_bot_rails
   orderable!
   pg
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 0.80)
   shoulda-matchers (~> 5.1.0)
+  sqlite3 (~> 1.4, >= 1.4.4)
   standalone_migrations (~> 6.1)
 
 BUNDLED WITH
