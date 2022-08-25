@@ -2,23 +2,14 @@
 
 require 'support/database_helper'
 require 'support/models'
+require 'factories/scopes_model'
 
 RSpec.describe ArrayScopeModel do
   before do
-    ArrayScopeModel.insert_all([
-      { name: 'alpha-a-0', position: 0, kind: 'alpha', group: 'a' },
-      { name: 'alpha-a-1', position: 1, kind: 'alpha', group: 'a' },
-      { name: 'alpha-a-2', position: 2, kind: 'alpha', group: 'a' },
-      { name: 'alpha-b-0', position: 0, kind: 'alpha', group: 'b' },
-      { name: 'alpha-b-1', position: 1, kind: 'alpha', group: 'b' },
-      { name: 'alpha-b-2', position: 2, kind: 'alpha', group: 'b' },
-      { name: 'beta-a-0',  position: 0, kind: 'beta', group: 'a' },
-      { name: 'beta-a-1',  position: 1, kind: 'beta', group: 'a' },
-      { name: 'beta-a-2',  position: 2, kind: 'beta', group: 'a' },
-      { name: 'beta-b-0',  position: 0, kind: 'beta', group: 'b' },
-      { name: 'beta-b-1',  position: 1, kind: 'beta', group: 'b' },
-      { name: 'beta-b-2',  position: 2, kind: 'beta', group: 'b' }
-    ])
+    3.times { |i| FactoryBot.create(:ScopesModel, name: "alpha-a-#{i}", position: i, group: 'a', kind: 'alpha') }
+    3.times { |i| FactoryBot.create(:ScopesModel, name: "alpha-b-#{i}", position: i, group: 'b', kind: 'alpha') }
+    3.times { |i| FactoryBot.create(:ScopesModel, name: "beta-a-#{i}",  position: i, group: 'a', kind: 'beta') }
+    3.times { |i| FactoryBot.create(:ScopesModel, name: "beta-b-#{i}",  position: i, group: 'b', kind: 'beta') }
   end
 
   let(:alpha_a_names) { ArrayScopeModel.where(kind: 'alpha', group: 'a').order(:position).pluck(:name) }

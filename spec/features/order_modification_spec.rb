@@ -2,15 +2,11 @@
 
 require 'support/database_helper'
 require 'support/models'
+require 'factories/basic_model'
 
 RSpec.describe 'Order modification' do
   before do
-    BasicModel.insert_all([
-      { name: 'a', position: 0 },
-      { name: 'b', position: 1 },
-      { name: 'c', position: 2 },
-      { name: 'd', position: 3 }
-    ])
+    4.times { |i| FactoryBot.create(:BasicModel, name: ('a'..'z').to_a[i], position: i) }
   end
 
   let(:names) { BasicModel.order(:position).pluck(:name) }
