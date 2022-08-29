@@ -4,7 +4,7 @@ class CreateBasicModel < ActiveRecord::Migration[6.1]
   def change
     create_table :basic_models do |t|
       t.string :name, null: false
-      t.integer :position, null: false, default: 0
+      t.integer :position, null: false
     end
   end
 end

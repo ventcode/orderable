@@ -12,6 +12,10 @@ module Orderable
       @scope = scope.is_a?(Array) ? scope : [scope]
     end
 
+    def on_initialize(record)
+      record[field] ||= affected_records(record).count
+    end
+
     def on_create(record)
       records = affected_records(record, above: record[field])
       push(records)
@@ -35,7 +39,7 @@ module Orderable
     def validate_less_than_or_equal_to(record)
       max_value = affected_records(record).count
       max_value -= 1 unless record.new_record?
-      return if record[field] <= max_value
+      return if record[field] && record[field] <= max_value
 
       record.errors.add(field, :less_than_or_equal_to, count: max_value)
     end
