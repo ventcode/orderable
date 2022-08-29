@@ -7,7 +7,7 @@ module Orderable
       executor = Executor.new(self, field, scope)
 
       class_eval do
-        after_initialize { executor.put_field_for_last(self) } if default_push_last
+        after_initialize { executor.on_initialize(self) } if default_push_last
         before_create { executor.on_create(self) }
         before_update { executor.on_update(self) }
         after_destroy { executor.on_destroy(self) }

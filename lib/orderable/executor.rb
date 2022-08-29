@@ -12,6 +12,10 @@ module Orderable
       @scope = scope.is_a?(Array) ? scope : [scope]
     end
 
+    def on_initialize(record)
+      record[field] ||= affected_records(record).count
+    end
+
     def on_create(record)
       records = affected_records(record, above: record[field])
       push(records)
@@ -30,12 +34,6 @@ module Orderable
     def on_destroy(record)
       records = affected_records(record, above: record[field])
       push(records, by: -1)
-    end
-
-    def put_field_for_last(record)
-      return unless record[field].nil? || (!record.changes.keys.include?(field) && record.new_record?)
-
-      record[field] = affected_records(record).count
     end
 
     def validate_less_than_or_equal_to(record)
