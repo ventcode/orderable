@@ -3,7 +3,7 @@
 require 'support/database_helper'
 require 'support/models'
 
-RSpec.shared_examples 'does not affect for single scope' do |actions|
+RSpec.shared_examples 'does not affect for single scope' do |_actions|
   let(:actions) { instance_exec(&action) }
 
   it 'does not affect records outside of scope' do
@@ -11,7 +11,7 @@ RSpec.shared_examples 'does not affect for single scope' do |actions|
   end
 end
 
-RSpec.shared_examples 'does not affect for many scopes' do |actions|
+RSpec.shared_examples 'does not affect for many scopes' do |_actions|
   let(:actions) { instance_exec(&action) }
 
   it 'does not affect records outside of scope' do
@@ -37,7 +37,6 @@ RSpec.describe 'asdasdasd' do
   let!(:out_of_single_scope) { ModelWithOneScope.create!(name: 'other', position: 0, kind: 'beta') }
   let!(:out_of_many_scopes) { ModelWithManyScopes.create!(name: 'other', position: 0, kind: 'alpha', group: 'a') }
 
-
   context 'when creating a new record' do
     let(:single_scope_action) { ModelWithOneScope.create(name: 'd', position: 0, kind: 'alpha') }
     let(:many_scope_action) { ModelWithManyScopes.create(name: 'd', position: 0, kind: 'alpha', group: 'a') }
@@ -51,7 +50,8 @@ RSpec.describe 'asdasdasd' do
     let(:many_scope_action) { ModelWithManyScopes.where.not(group: nil).last.update(position: 0) }
 
     it_should_behave_like 'does not affect for single scope', actions: -> { single_scope_action out_of_single_scope }
-    it_should_behave_like 'does not affect for many scopes', actions: -> { many_scope_action out_of_many_scopes }  end
+    it_should_behave_like 'does not affect for many scopes', actions: -> { many_scope_action out_of_many_scopes }
+  end
 
   context 'when destroying a record' do
     let(:single_scope_action) { ModelWithOneScope.where(group: nil).last.destroy }
