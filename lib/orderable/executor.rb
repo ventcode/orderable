@@ -33,13 +33,13 @@ module Orderable
     end
 
     def put_field_for_last(record)
-      return unless record[field].nil? || !record.send("#{field}_changed?")
+      return unless record[field].nil? || (!record.changes.keys.include?(field) && record.new_record?)
 
       record[field] = affected_records(record).count
     end
 
     def validate_less_than_or_equal_to(record)
-      return record.errors.add(field, :blank) if record[field].nil?
+      return if record[field].nil?
 
       max_value = affected_records(record).count
       max_value -= 1 unless record.new_record?

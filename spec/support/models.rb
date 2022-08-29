@@ -11,11 +11,7 @@ class NoValidationModel < ActiveRecord::Base
 end
 
 class NoDefaultPushLastModel < ActiveRecord::Base
-  self.table_name = 'basic_models'
+  self.table_name = 'no_default_models'
 
-  orderable :position, default_push_last: false
-end
-
-class NoDefaultModel < ActiveRecord::Base
   orderable :position, default_push_last: false
 end

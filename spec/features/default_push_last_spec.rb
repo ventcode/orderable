@@ -29,49 +29,22 @@ RSpec.describe 'Configuration option :default_push_last' do
   end
 
   context 'when :default_push_last is set to false' do
-    context 'with default value' do
-      context 'without records' do
-        subject { NoDefaultPushLastModel.create(name: 'a') }
-
-        it 'pushes the record to default position' do
-          expect(subject.position).to eq(0)
-        end
-      end
-
-      context 'with some records' do
-        before do
-          NoDefaultPushLastModel.insert_all [
-            { name: 'a', position: 0 },
-            { name: 'b', position: 1 }
-          ]
-        end
-
-        subject { NoDefaultPushLastModel.create(name: 'c') }
-
-        it 'pushes the record to default position' do
-          expect(subject.position).to eq(0)
-        end
+    context 'without records' do
+      it 'raises error without position specified' do
+        expect { NoDefaultPushLastModel.create!(name: 'a') }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
 
-    context 'without default value' do
-      context 'without records' do
-        it 'raises error without position specified' do
-          expect { NoDefaultModel.create!(name: 'a') }.to raise_error(ActiveRecord::RecordInvalid)
-        end
+    context 'with records' do
+      before do
+        NoDefaultPushLastModel.insert_all [
+          { name: 'a', position: 0 },
+          { name: 'b', position: 1 }
+        ]
       end
 
-      context 'with records' do
-        before do
-          NoDefaultModel.insert_all [
-            { name: 'a', position: 0 },
-            { name: 'b', position: 1 }
-          ]
-        end
-
-        it 'raises error without position specified' do
-          expect { NoDefaultModel.create!(name: 'c') }.to raise_error(ActiveRecord::RecordInvalid)
-        end
+      it 'raises error without position specified' do
+        expect { NoDefaultPushLastModel.create!(name: 'c') }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end
