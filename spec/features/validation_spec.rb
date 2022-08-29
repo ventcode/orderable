@@ -7,6 +7,7 @@ RSpec.describe 'Configuration option :validate', :with_validations do
   context 'when validate option is set to true' do
     subject { BasicModel.new(name: 'a', position: 0) }
 
+    it { should validate_presence_of(:position) }
     it { should validate_numericality_of(:position).only_integer.is_greater_than_or_equal_to(0) }
 
     describe 'validates that :position is less or equal to its current maximum possible value' do
