@@ -38,7 +38,7 @@ RSpec.describe 'asdasdasd' do
       end
     end
 
-    context 'for many scope' do
+    context 'for many scopes' do
       it_should_behave_like 'does not affect outside of scope' do
         let(:action) { many_scope_action }
         let(:out_of_scope) { out_of_many_scopes }
@@ -57,7 +57,7 @@ RSpec.describe 'asdasdasd' do
       end
     end
 
-    context 'for many scope' do
+    context 'for many scopes' do
       it_should_behave_like 'does not affect outside of scope' do
         let(:action) { many_scope_action }
         let(:out_of_scope) { out_of_many_scopes }
@@ -76,7 +76,7 @@ RSpec.describe 'asdasdasd' do
       end
     end
 
-    context 'for many scope' do
+    context 'for many scopes' do
       it_should_behave_like 'does not affect outside of scope' do
         let(:action) { many_scope_action }
         let(:out_of_scope) { out_of_many_scopes }
