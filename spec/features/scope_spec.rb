@@ -31,14 +31,18 @@ RSpec.describe 'asdasdasd' do
     let(:single_scope_action) { ModelWithOneScope.create(name: 'd', position: 0, kind: 'alpha') }
     let(:many_scope_action) { ModelWithManyScopes.create(name: 'd', position: 0, kind: 'beta', group: 'a') }
 
-    it_should_behave_like 'does not affect outside of scope' do
-      let(:action) { single_scope_action }
-      let(:out_of_scope) { out_of_single_scope }
+    context 'for single scope' do
+      it_should_behave_like 'does not affect outside of scope' do
+        let(:action) { single_scope_action }
+        let(:out_of_scope) { out_of_single_scope }
+      end
     end
 
-    it_should_behave_like 'does not affect outside of scope' do
-      let(:action) { many_scope_action }
-      let(:out_of_scope) { out_of_many_scopes }
+    context 'for many scope' do
+      it_should_behave_like 'does not affect outside of scope' do
+        let(:action) { many_scope_action }
+        let(:out_of_scope) { out_of_many_scopes }
+      end
     end
   end
 
@@ -46,14 +50,18 @@ RSpec.describe 'asdasdasd' do
     let(:single_scope_action) { ModelWithOneScope.where(group: nil).last.update(position: 0) }
     let(:many_scope_action) { ModelWithManyScopes.where.not(group: nil).last.update(position: 0) }
 
-    it_should_behave_like 'does not affect outside of scope' do
-      let(:action) { single_scope_action }
-      let(:out_of_scope) { out_of_single_scope }
+    context 'for single scope' do
+      it_should_behave_like 'does not affect outside of scope' do
+        let(:action) { single_scope_action }
+        let(:out_of_scope) { out_of_single_scope }
+      end
     end
 
-    it_should_behave_like 'does not affect outside of scope' do
-      let(:action) { many_scope_action }
-      let(:out_of_scope) { out_of_many_scopes }
+    context 'for many scope' do
+      it_should_behave_like 'does not affect outside of scope' do
+        let(:action) { many_scope_action }
+        let(:out_of_scope) { out_of_many_scopes }
+      end
     end
   end
 
@@ -61,14 +69,18 @@ RSpec.describe 'asdasdasd' do
     let(:single_scope_action) { ModelWithOneScope.where(group: nil, kind: 'alpha').last.destroy }
     let(:many_scope_action) { ModelWithManyScopes.where(kind: 'beta', group: 'a').last.destroy }
 
-    it_should_behave_like 'does not affect outside of scope' do
-      let(:action) { single_scope_action }
-      let(:out_of_scope) { out_of_single_scope }
+    context 'for single scope' do
+      it_should_behave_like 'does not affect outside of scope' do
+        let(:action) { single_scope_action }
+        let(:out_of_scope) { out_of_single_scope }
+      end
     end
 
-    it_should_behave_like 'does not affect outside of scope' do
-      let(:action) { many_scope_action }
-      let(:out_of_scope) { out_of_many_scopes }
+    context 'for many scope' do
+      it_should_behave_like 'does not affect outside of scope' do
+        let(:action) { many_scope_action }
+        let(:out_of_scope) { out_of_many_scopes }
+      end
     end
   end
 end
