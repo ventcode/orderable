@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'database_cleaner-active_record', '~> 2.0', '>= 2.0.1'
-gem 'pg'
+gem 'pg', '~> 1.4.3'
 gem 'rake', '~> 13.0'
 gem 'rspec', '~> 3.0'
 gem 'rubocop', '~> 0.80'

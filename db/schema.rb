@@ -23,8 +23,8 @@ ActiveRecord::Schema.define(version: 20_220_819_131_546) do
 
   create_table 'scopes_models', force: :cascade do |t|
     t.string 'name', null: false
-    t.integer 'position', default: 0, null: false
-    t.string 'kind', default: 'alpha', null: false
-    t.string 'group', default: 'a', null: false
+    t.integer 'position', null: false
+    t.string 'kind'
+    t.string 'group'
   end
 end

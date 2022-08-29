@@ -121,7 +121,7 @@ PLATFORMS
 DEPENDENCIES
   database_cleaner-active_record (~> 2.0, >= 2.0.1)
   orderable!
-  pg
+  pg (~> 1.4.3)
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 0.80)

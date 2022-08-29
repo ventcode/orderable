@@ -11,3 +11,6 @@ Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - spec/**/*
