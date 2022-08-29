@@ -37,11 +37,9 @@ module Orderable
     end
 
     def validate_less_than_or_equal_to(record)
-      return if record[field].nil?
-
       max_value = affected_records(record).count
       max_value -= 1 unless record.new_record?
-      return if record[field] <= max_value
+      return if record[field] && record[field] <= max_value
 
       record.errors.add(field, :less_than_or_equal_to, count: max_value)
     end
