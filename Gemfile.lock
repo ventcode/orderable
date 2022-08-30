@@ -107,7 +107,6 @@ GEM
     ruby-progressbar (1.11.0)
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
-    sqlite3 (1.4.4)
     standalone_migrations (6.1.0)
       activerecord (>= 4.2.7, < 6.2.0, != 5.2.3.rc1, != 5.2.3)
       railties (>= 4.2.7, < 6.2.0, != 5.2.3.rc1, != 5.2.3)
@@ -128,12 +127,11 @@ DEPENDENCIES
   database_cleaner-active_record (~> 2.0, >= 2.0.1)
   factory_bot_rails
   orderable!
-  pg
+  pg (~> 1.4.3)
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 0.80)
   shoulda-matchers (~> 5.1.0)
-  sqlite3 (~> 1.4, >= 1.4.4)
   standalone_migrations (~> 6.1)
 
 BUNDLED WITH

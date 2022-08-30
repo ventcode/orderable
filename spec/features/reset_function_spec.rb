@@ -19,15 +19,6 @@ RSpec.describe Executor do
   let(:beta_names) { ScopesModel.where(group: 'b').order(:position).pluck(:name) }
   let(:beta_positions) { ScopesModel.where(group: 'b').order(:position).pluck(:position) }
 
-  context 'with unsupported adapter' do
-    before { MultiDataBaseModel.set_db_to_sqlite }
-    after { MultiDataBaseModel.set_db_to_postgresql }
-
-    it 'it raise Adapter error' do
-      expect { subject.reset }.to raise_error(Orderable::AdapterError)
-    end
-  end
-
   context 'with supported adapter' do
     before { subject.reset }
 
