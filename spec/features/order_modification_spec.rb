@@ -5,15 +5,13 @@ require 'support/models'
 require 'factories/basic_model'
 
 RSpec.describe 'Order modification' do
-  before do
-    4.times { |i| FactoryBot.create(:BasicModel, name: ('a'..'z').to_a[i], position: i) }
-  end
+  before { create_list(:basic_model, 4) }
 
   let(:names) { BasicModel.order(:position).pluck(:name) }
   let(:positions) { BasicModel.order(:position).pluck(:position) }
 
   context 'when creating a new record' do
-    before { BasicModel.create(name: 'e', position: 2) }
+    before { create(:basic_model, name: 'e', position: 2) }
 
     it 'pushes all later positions' do
       expect(names).to eq(%w[a b e c d])
