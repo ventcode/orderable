@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'support/models'
-require 'support/factory_bot_helper'
 
 FactoryBot.define do
-  factory :BasicModel do
-    name { FactoryBotHelper.generate_string(length: 3) }
-    position { 0 }
+  factory :basic_model, class: BasicModel do
+    sequence(:name, 'a')
+    sequence(:position, 0) { |n| n }
+
+    factory :no_validation_model, class: NoValidationModel
+    factory :no_default_push_last_model, class: NoDefaultPushLastModel
   end
 end

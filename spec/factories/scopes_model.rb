@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
 require 'support/models'
-require 'support/factory_bot_helper'
 
 FactoryBot.define do
-  factory :ScopesModel do
-    name { FactoryBotHelper.generate_string(length: 2) }
-    kind {  FactoryBotHelper.generate_string(length: 3) }
-    group { FactoryBotHelper.generate_string(length: 1) }
-    position { 0 }
+  factory :scopes_model, class: ModelWithManyScopes do
+    sequence(:name, 'a')
+    sequence(:position, 0)
+    group { 'a' }
+    kind { 'alpha' }
+
+    trait :random_position do
+      position { rand(10) }
+      to_create { |instance| instance.save(validate: false) }
+    end
   end
 end
