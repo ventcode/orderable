@@ -22,9 +22,6 @@ class NoValidationModel < ActiveRecord::Base
   orderable :position, validate: false
 end
 
-class Executor < Orderable::Executor
-end
-
 class NoDefaultPushLastModel < ActiveRecord::Base
   self.table_name = 'basic_models'
 
