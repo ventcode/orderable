@@ -1,0 +1,14 @@
+class <%= migration_class_name %> < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
+  def up
+    execute <<-SQL
+      ALTER TABLE <%= table_name %>
+      ADD <%= field_name %> INTEGER UNIQUE DEFERRABLE INITIALLY DEFERRED
+    SQL
+  end
+  def down
+    execute <<-SQL
+      ALTER TABLE <%= table_name %>
+      DROP COLUMN <%= field_name %>
+    SQL
+  end
+end
