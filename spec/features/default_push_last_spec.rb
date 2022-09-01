@@ -17,7 +17,7 @@ RSpec.describe 'Configuration option :default_push_last' do
     context 'with some records' do
       before { create_list(:basic_model, 2) }
 
-      subject { BasicModel.create(name: 'c') }
+      subject { create(:basic_model) }
 
       it 'pushes entry with undefined position to the end' do
         expect(subject.position).to eq(2)

@@ -33,7 +33,6 @@ RSpec.configure do |config|
 
   config.include(Shoulda::Matchers::ActiveModel, :with_validations)
   config.include(Shoulda::Matchers::ActiveRecord, :with_validations)
-
   config.include FactoryBot::Syntax::Methods
 end
 

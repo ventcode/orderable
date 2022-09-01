@@ -125,7 +125,7 @@ PLATFORMS
 
 DEPENDENCIES
   database_cleaner-active_record (~> 2.0, >= 2.0.1)
-  factory_bot_rails
+  factory_bot_rails (~> 6.2)
   orderable!
   pg (~> 1.4.3)
   rake (~> 13.0)
