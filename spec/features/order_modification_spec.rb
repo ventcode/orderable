@@ -2,22 +2,16 @@
 
 require 'support/database_helper'
 require 'support/models'
+require 'factories/basic_model'
 
 RSpec.describe 'Order modification' do
-  before do
-    BasicModel.insert_all([
-      { name: 'a', position: 0 },
-      { name: 'b', position: 1 },
-      { name: 'c', position: 2 },
-      { name: 'd', position: 3 }
-    ])
-  end
+  before { create_list(:basic_model, 4) }
 
   let(:names) { BasicModel.order(:position).pluck(:name) }
   let(:positions) { BasicModel.order(:position).pluck(:position) }
 
   context 'when creating a new record' do
-    before { BasicModel.create(name: 'e', position: 2) }
+    before { create(:basic_model, name: 'e', position: 2) }
 
     it 'pushes all later positions' do
       expect(names).to eq(%w[a b e c d])

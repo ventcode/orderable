@@ -3,6 +3,7 @@
 require 'orderable'
 require 'database_cleaner/active_record'
 require 'shoulda-matchers'
+require 'factory_bot_rails'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -13,6 +14,10 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  config.before(:each) do
+    FactoryBot.reload
   end
 
   config.before(:suite) do
@@ -28,6 +33,7 @@ RSpec.configure do |config|
 
   config.include(Shoulda::Matchers::ActiveModel, :with_validations)
   config.include(Shoulda::Matchers::ActiveRecord, :with_validations)
+  config.include FactoryBot::Syntax::Methods
 end
 
 Shoulda::Matchers.configure do |config|

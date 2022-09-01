@@ -2,6 +2,7 @@
 
 require 'support/database_helper'
 require 'support/models'
+require 'factories/basic_model'
 
 RSpec.shared_examples 'does not affect outside of scope' do
   it 'does not affect records outside of scope' do
@@ -10,17 +11,11 @@ RSpec.shared_examples 'does not affect outside of scope' do
 end
 
 RSpec.describe 'Configuration option :scope' do
-  before do
-    ModelWithOneScope.insert_all([
-      { name: 'a', position: 0, kind: 'alpha', group: 'a' },
-      { name: 'b', position: 1, kind: 'alpha', group: 'a' },
-      { name: 'c', position: 2, kind: 'alpha', group: 'a' }
-    ])
-  end
+  before { create_list(:scopes_model, 3) }
 
-  let!(:out_of_scope) { ModelWithOneScope.create!(name: 'other', position: 0, kind: 'beta', group: 'b') }
+  let(:out_of_scope) { create(:scopes_model, name: 'other', position: 0, kind: 'beta', group: 'b') }
 
-  [ModelWithManyScopes, ModelWithOneScope].each do |model|
+  [ModelWithOneScope, ModelWithManyScopes].each do |model|
     describe model do
       context 'when creating a new record' do
         let(:action) { model.create(name: 'd', position: 0, kind: 'alpha', group: 'a') }

@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'support/database_helper'
+require 'support/models'
+require 'factories/basic_model'
 
 RSpec.describe 'Configuration option :default_push_last' do
   context 'when :default_push_last is set to true' do
     context 'without other records' do
-      subject { BasicModel.create(name: 'a') }
+      subject { create(:basic_model) }
 
       it 'should push a record to position zero' do
         expect(subject.position).to eq(0)
@@ -13,14 +15,9 @@ RSpec.describe 'Configuration option :default_push_last' do
     end
 
     context 'with some records' do
-      before do
-        BasicModel.insert_all [
-          { name: 'a', position: 0 },
-          { name: 'b', position: 1 }
-        ]
-      end
+      before { create_list(:basic_model, 2) }
 
-      subject { BasicModel.create(name: 'c') }
+      subject { create(:basic_model) }
 
       it 'pushes entry with undefined position to the end' do
         expect(subject.position).to eq(2)
@@ -31,20 +28,15 @@ RSpec.describe 'Configuration option :default_push_last' do
   context 'when :default_push_last is set to false' do
     context 'without records' do
       it 'raises error without position specified' do
-        expect { NoDefaultPushLastModel.create!(name: 'a') }.to raise_error(ActiveRecord::RecordInvalid)
+        expect { create(:no_default_push_last_model, position: nil) }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
 
     context 'with records' do
-      before do
-        NoDefaultPushLastModel.insert_all [
-          { name: 'a', position: 0 },
-          { name: 'b', position: 1 }
-        ]
-      end
+      before { create_list(:basic_model, 2) }
 
       it 'raises error without position specified' do
-        expect { NoDefaultPushLastModel.create!(name: 'c') }.to raise_error(ActiveRecord::RecordInvalid)
+        expect { create(:no_default_push_last_model, position: nil) }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end
