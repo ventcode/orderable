@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 require 'rails/generators/base'
-require "rails/generators/active_record/migration"
+require 'rails/generators/active_record/migration'
 
 module Orderable
   module Generators
     class MigrationGenerator < Rails::Generators::Base
       include ActiveRecord::Generators::Migration
-      argument :arguments, type: :string, banner: "table:field"
+
+      argument :arguments, type: :string, banner: 'table:field'
 
       source_root File.expand_path('templates', __dir__)
 
@@ -25,11 +28,11 @@ module Orderable
 
       def deconstruct_argument
         table, field = arguments.split(':')
-        [normalize_table_name(table), field]
+        [normalize_table_name(table).underscore, field.underscore]
       end
 
-      def normalize_table_name(_table_name)
-        pluralize_table_names? ? _table_name.pluralize : _table_name.singularize
+      def normalize_table_name(table_name)
+        pluralize_table_names? ? table_name.pluralize : table_name.singularize
       end
 
       def pluralize_table_names?
