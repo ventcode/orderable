@@ -4,6 +4,8 @@ require 'orderable'
 require 'database_cleaner/active_record'
 require 'shoulda-matchers'
 require 'factory_bot_rails'
+require 'active_record/railtie'
+require 'ammeter/init'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -23,6 +25,10 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.after(:suite) do
+    FileUtils.remove_dir("#{Rails.root}/tmp/db")
   end
 
   config.around(:each) do |example|
