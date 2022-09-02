@@ -1,0 +1,11 @@
+Description:
+      Generates a migration, which add field to specified table 
+    with unique deferrable initially deferred constraint in PSQL
+
+Example:
+    bin/rails generate orderable:migration BasicModel:position
+
+    This will create:
+        db/migrate/{timestamp}_add_unique_orderable_position_to_basic_model.rb
+
+        
