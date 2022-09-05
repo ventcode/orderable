@@ -9,7 +9,7 @@ module Orderable
       include ActiveRecord::Generators::Migration
 
       source_root File.expand_path('templates', __dir__)
-      
+
       argument :arguments, type: :array, banner: 'table:field scope scope'
 
       def create_migration_file
