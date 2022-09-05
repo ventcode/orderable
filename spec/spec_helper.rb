@@ -27,10 +27,6 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.after(:suite) do
-    FileUtils.remove_dir("#{Rails.root}/tmp/db")
-  end
-
   config.around(:each) do |example|
     DatabaseCleaner.cleaning do
       example.run
