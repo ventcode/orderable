@@ -22,5 +22,4 @@ FactoryBot.define do
       kind { 'alpha' }
     end
   end
-  
 end
