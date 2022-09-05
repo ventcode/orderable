@@ -13,7 +13,7 @@ end
 RSpec.describe 'Configuration option :scope' do
   context 'for model with one scope' do
     before { create_list(:model_with_one_scope, 3) }
-  
+
     let(:out_of_scope) { create(:model_with_one_scope, name: 'other', position: 0, kind: 'beta') }
 
     context 'when creating a new record' do
@@ -37,7 +37,7 @@ RSpec.describe 'Configuration option :scope' do
 
   context 'for model with many scopes' do
     before { create_list(:model_with_many_scopes, 3) }
-  
+
     let(:out_of_scope) { create(:model_with_many_scopes, name: 'other', position: 0, kind: 'beta', group: 'b') }
 
     context 'when creating a new record' do

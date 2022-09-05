@@ -25,8 +25,8 @@ RSpec.describe 'Function :reset' do
     before { ModelWithManyScopes.reset_position }
 
     it 'reset the positions and keeps the sequential order' do
-      expect(alpha_positions).to eq((0..2).to_a)
-      expect(beta_positions).to eq((0..2).to_a)
+      expect(alpha_positions).to eq((0..2).to_a.reverse)
+      expect(beta_positions).to eq((0..2).to_a.reverse)
     end
   end
 end
