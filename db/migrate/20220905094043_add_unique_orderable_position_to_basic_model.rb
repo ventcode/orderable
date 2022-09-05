@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUniqueOrderablePositionToBasicModel < ActiveRecord::Migration[6.1]
   def up
     execute <<-SQL
@@ -6,6 +8,7 @@ class AddUniqueOrderablePositionToBasicModel < ActiveRecord::Migration[6.1]
         ADD UNIQUE("position") DEFERRABLE INITIALLY DEFERRED
     SQL
   end
+
   def down
     execute <<-SQL
       ALTER TABLE "basic_models"

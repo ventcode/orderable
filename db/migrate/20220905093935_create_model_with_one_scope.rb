@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateModelWithOneScope < ActiveRecord::Migration[6.1]
   def change
     create_table :model_with_one_scopes do |t|
