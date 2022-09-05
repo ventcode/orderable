@@ -68,13 +68,15 @@ module Orderable
     end
 
     def push(records, by: 1)
+      return if records.empty?
+
       records.update_all("#{field} = #{field} + #{by}")
     end
 
     def scope_groups
       return [nil] if scope.empty?
 
-      model.group(scope).count.map do |(values, _count)|
+      model.unscoped.group(scope).count.map do |(values, _count)|
         values = [values] unless values.is_a?(Array)
         scope.zip(values).to_h
       end
