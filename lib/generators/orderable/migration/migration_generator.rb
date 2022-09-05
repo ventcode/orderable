@@ -8,26 +8,29 @@ module Orderable
     class MigrationGenerator < Rails::Generators::Base
       include ActiveRecord::Generators::Migration
 
-      argument :arguments, type: :string, banner: 'table:field'
+      argument :arguments, type: :array, default: [], banner: 'table:field scope scope'
 
       source_root File.expand_path('templates', __dir__)
 
       def create_migration_file
+        return if arguments.empty?
+
         set_local_assigns!
         migration_template 'migration.rb', File.join(db_migrate_path, "#{file_name}.rb")
       end
 
       private
 
-      attr_reader :field_name, :file_name, :table_name
+      attr_reader :field_name, :file_name, :table_name, :scopes
 
       def set_local_assigns!
-        @table_name, @field_name = deconstruct_argument
+        @table_name, @field_name = deconstruct_argument(arguments[0])
+        @scopes = arguments[1..(arguments.length - 1)].map(&:underscore)
         @file_name = "add_unique_orderable_#{field_name}_to_#{table_name.singularize}"
       end
 
-      def deconstruct_argument
-        table, field = arguments.split(':')
+      def deconstruct_argument(argument)
+        table, field = argument.split(':')
         [normalize_table_name(table).underscore, field.underscore]
       end
 
