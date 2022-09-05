@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -12,19 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_220_819_131_546) do
+ActiveRecord::Schema.define(version: 2022_09_05_094233) do
+
   # These are extensions that must be enabled in order to support this database
-  enable_extension 'plpgsql'
+  enable_extension "plpgsql"
 
-  create_table 'basic_models', force: :cascade do |t|
-    t.string 'name', null: false
-    t.integer 'position', null: false
+  create_table "basic_models", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "position"
+    t.index ["position"], name: "basic_models_position_key", unique: true
   end
 
-  create_table 'scopes_models', force: :cascade do |t|
-    t.string 'name', null: false
-    t.integer 'position', null: false
-    t.string 'kind'
-    t.string 'group'
+  create_table "model_with_many_scopes", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "kind"
+    t.string "group"
+    t.integer "position"
+    t.index ["position", "kind", "group"], name: "model_with_many_scopes_position_kind_group_key", unique: true
   end
+
+  create_table "model_with_one_scopes", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "kind"
+    t.integer "position"
+    t.index ["position", "kind"], name: "model_with_one_scopes_position_kind_key", unique: true
+  end
+
 end

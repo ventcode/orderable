@@ -9,7 +9,7 @@ FactoryBot.define do
 
     factory :no_validation_model, class: NoValidationModel
     factory :no_default_push_last_model, class: NoDefaultPushLastModel
-    factory :scopes_model, class: ModelWithManyScopes do
+    factory :model_with_many_scopes, class: ModelWithManyScopes do
       group { 'a' }
       kind { 'alpha' }
 
@@ -18,5 +18,9 @@ FactoryBot.define do
         to_create { |instance| instance.save(validate: false) }
       end
     end
+    factory :model_with_one_scope, class: ModelWithOneScope do
+      kind { 'alpha' }
+    end
   end
+  
 end

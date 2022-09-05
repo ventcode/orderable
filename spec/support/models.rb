@@ -5,14 +5,10 @@ class BasicModel < ActiveRecord::Base
 end
 
 class ModelWithOneScope < ActiveRecord::Base
-  self.table_name = 'scopes_models'
-
   orderable :position, scope: :kind
 end
 
 class ModelWithManyScopes < ActiveRecord::Base
-  self.table_name = 'scopes_models'
-
   orderable :position, scope: %i[kind group]
 end
 

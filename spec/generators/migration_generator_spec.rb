@@ -15,9 +15,9 @@ RSpec.describe Orderable::Generators::MigrationGenerator, type: :generator do
 
     it { is_expected.to exist }
     it { is_expected.to contain /execute/ }
-    it { is_expected.to contain /ALTER TABLE basic_models/ }
-    it { is_expected.to contain /ADD position_field INTEGER,/ }
-    it { is_expected.to contain /ADD UNIQUE\(position_field, scope, scope2\) DEFERRABLE INITIALLY DEFERRED/ }
-    it { is_expected.to contain /DROP COLUMN position_field/ }
+    it { is_expected.to contain /ALTER TABLE "basic_models"/ }
+    it { is_expected.to contain /ADD "position_field" INTEGER,/ }
+    it { is_expected.to contain /ADD UNIQUE\("position_field", "scope", "scope2"\) DEFERRABLE INITIALLY DEFERRED/ }
+    it { is_expected.to contain /DROP COLUMN "position_field"/ }
   end
 end

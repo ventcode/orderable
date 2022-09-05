@@ -11,29 +11,51 @@ RSpec.shared_examples 'does not affect outside of scope' do
 end
 
 RSpec.describe 'Configuration option :scope' do
-  before { create_list(:scopes_model, 3) }
+  context 'for model with one scope' do
+    before { create_list(:model_with_one_scope, 3) }
+  
+    let(:out_of_scope) { create(:model_with_one_scope, name: 'other', position: 0, kind: 'beta') }
 
-  let(:out_of_scope) { create(:scopes_model, name: 'other', position: 0, kind: 'beta', group: 'b') }
+    context 'when creating a new record' do
+      let(:action) { create(:model_with_one_scope, name: 'd', position: 0) }
 
-  [ModelWithOneScope, ModelWithManyScopes].each do |model|
-    describe model do
-      context 'when creating a new record' do
-        let(:action) { model.create(name: 'd', position: 0, kind: 'alpha', group: 'a') }
+      include_examples 'does not affect outside of scope'
+    end
 
-        include_examples 'does not affect outside of scope'
-      end
+    context 'when updating a record' do
+      let(:action) { ModelWithOneScope.where(kind: 'alpha').last.update(position: 0) }
 
-      context 'when updating a record' do
-        let(:action) { model.where(kind: 'alpha', group: 'a').last.update(position: 0) }
+      include_examples 'does not affect outside of scope'
+    end
 
-        include_examples 'does not affect outside of scope'
-      end
+    context 'when destroying a record' do
+      let(:action) { ModelWithOneScope.where(kind: 'alpha').last.destroy }
 
-      context 'when destroying a record' do
-        let(:action) { model.where(kind: 'alpha', group: 'a').last.destroy }
+      include_examples 'does not affect outside of scope'
+    end
+  end
 
-        include_examples 'does not affect outside of scope'
-      end
+  context 'for model with many scopes' do
+    before { create_list(:model_with_many_scopes, 3) }
+  
+    let(:out_of_scope) { create(:model_with_many_scopes, name: 'other', position: 0, kind: 'beta', group: 'b') }
+
+    context 'when creating a new record' do
+      let(:action) { create(:model_with_many_scopes, name: 'd', position: 0) }
+
+      include_examples 'does not affect outside of scope'
+    end
+
+    context 'when updating a record' do
+      let(:action) { ModelWithManyScopes.where(kind: 'alpha', group: 'a').last.update(position: 0) }
+
+      include_examples 'does not affect outside of scope'
+    end
+
+    context 'when destroying a record' do
+      let(:action) { ModelWithManyScopes.where(kind: 'alpha', group: 'a').last.destroy }
+
+      include_examples 'does not affect outside of scope'
     end
   end
 end
