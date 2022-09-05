@@ -8,13 +8,11 @@ module Orderable
     class MigrationGenerator < Rails::Generators::Base
       include ActiveRecord::Generators::Migration
 
-      argument :arguments, type: :array, default: [], banner: 'table:field scope scope'
-
       source_root File.expand_path('templates', __dir__)
+      
+      argument :arguments, type: :array, banner: 'table:field scope scope'
 
       def create_migration_file
-        return if arguments.empty?
-
         set_local_assigns!
         migration_template 'migration.rb', File.join(db_migrate_path, "#{file_name}.rb")
       end
