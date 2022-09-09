@@ -9,6 +9,7 @@ class AddUniqueOrderablePositionToBasicModel < ActiveRecord::Migration[6.1]
         ADD UNIQUE("position") DEFERRABLE INITIALLY DEFERRED
     SQL
   end
+
   def down
     remove_column :basic_models, :position
   end

@@ -15,5 +15,4 @@ ActiveRecord::Base.schema_format = :sql
 
 StandaloneMigrations::Tasks.load_tasks
 
-
 # task default: %i[spec rubocop]

@@ -9,6 +9,7 @@ class AddUniqueOrderablePositionToModelWithManyScopes < ActiveRecord::Migration[
         ADD UNIQUE("position", "kind", "group") DEFERRABLE INITIALLY DEFERRED
     SQL
   end
+
   def down
     remove_column :model_with_many_scopes, :position
   end
