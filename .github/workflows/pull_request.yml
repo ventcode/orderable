@@ -47,11 +47,8 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Create database
-        run: bundle exec rake db:create
-
-      - name: Run migrations
-        run: bundle exec rake db:migrate
+      - name: Setup Database
+        run: bundle exec rake db:setup
 
       - name: Run RSpec
         run: bundle exec rspec -fd

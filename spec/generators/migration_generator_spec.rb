@@ -18,10 +18,9 @@ RSpec.describe Orderable::Generators::MigrationGenerator, type: :generator do
     subject { migration_file('db/migrate/add_unique_orderable_position_field_to_basic_model.rb') }
 
     it { is_expected.to exist }
-    it { is_expected.to contain /execute/ }
+    it { is_expected.to contain /add_column :basic_models, :position_field, :integer/ }
     it { is_expected.to contain /ALTER TABLE "basic_models"/ }
-    it { is_expected.to contain /ADD "position_field" INTEGER,/ }
     it { is_expected.to contain /ADD UNIQUE\("position_field", "scope", "scope2"\) DEFERRABLE INITIALLY DEFERRED/ }
-    it { is_expected.to contain /DROP COLUMN "position_field"/ }
+    it { is_expected.to contain /remove_column :basic_models, :position_field/ }
   end
 end
