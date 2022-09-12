@@ -7,18 +7,18 @@ require 'factories/basic_model'
 RSpec.describe 'Order modification' do
   before { create_list(:basic_model, 4) }
 
-  let(:names) { BasicModel.pluck(:name) }
-  let(:positions) { BasicModel.pluck(:position) }
+  let(:names) { BasicModel.order(:position).pluck(:name) }
+  let(:positions) { BasicModel.order(:position).pluck(:position) }
 
   context 'when creating a new record' do
     before { create(:basic_model, name: 'e', position: 2) }
 
     it 'pushes all later positions' do
-      expect(names).to eq(%w[d c e b a])
+      expect(names).to eq(%w[a b e c d])
     end
 
     it 'keeps the sequential order' do
-      expect(positions).to eq((0..4).to_a.reverse)
+      expect(positions).to eq((0..4).to_a)
     end
   end
 
@@ -26,11 +26,11 @@ RSpec.describe 'Order modification' do
     before { BasicModel.find_by(name: 'a').update(position: 2) }
 
     it 'shifts objects around' do
-      expect(names).to eq(%w[d a c b])
+      expect(names).to eq(%w[b c a d])
     end
 
     it 'keeps the sequential order' do
-      expect(positions).to eq((0..3).to_a.reverse)
+      expect(positions).to eq((0..3).to_a)
     end
   end
 
@@ -38,11 +38,11 @@ RSpec.describe 'Order modification' do
     before { BasicModel.find_by(name: 'c').update(position: 0) }
 
     it 'shifts objects around' do
-      expect(names).to eq(%w[d b a c])
+      expect(names).to eq(%w[c a b d])
     end
 
     it 'keeps the sequential order' do
-      expect(positions).to eq((0..3).to_a.reverse)
+      expect(positions).to eq((0..3).to_a)
     end
   end
 
@@ -50,11 +50,11 @@ RSpec.describe 'Order modification' do
     before { BasicModel.find_by(name: 'c').destroy }
 
     it 'pulls all later positions' do
-      expect(names).to eq(%w[d b a])
+      expect(names).to eq(%w[a b d])
     end
 
     it 'keeps the sequential order' do
-      expect(positions).to eq((0..2).to_a.reverse)
+      expect(positions).to eq((0..2).to_a)
     end
   end
 end
