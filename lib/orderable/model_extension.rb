@@ -12,9 +12,8 @@ module Orderable
         after_initialize { executor.on_initialize(self) } if default_push_last
         before_create { executor.on_create(self) }
         before_update { executor.on_update(self) }
+        before_destroy { reload }
         after_destroy { executor.on_destroy(self) }
-
-        default_scope { order(*scope, field => :desc) }
 
         return unless validate
 
