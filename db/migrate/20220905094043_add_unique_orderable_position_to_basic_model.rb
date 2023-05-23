@@ -4,9 +4,9 @@ class AddUniqueOrderablePositionToBasicModel < ActiveRecord::Migration[6.1]
   def up
     add_column :basic_models, :position, :integer
 
-    execute <<-SQL
-      ALTER TABLE "basic_models"
-        ADD UNIQUE("position") DEFERRABLE INITIALLY DEFERRED
+    execute(<<-SQL)
+      ALTER TABLE basic_models
+      ADD UNIQUE(position) DEFERRABLE INITIALLY DEFERRED;
     SQL
   end
 

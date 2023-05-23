@@ -4,9 +4,9 @@ class AddUniqueOrderablePositionToModelWithManyScopes < ActiveRecord::Migration[
   def up
     add_column :model_with_many_scopes, :position, :integer
 
-    execute <<-SQL
-      ALTER TABLE "model_with_many_scopes"
-        ADD UNIQUE("position", "kind", "group") DEFERRABLE INITIALLY DEFERRED
+    execute(<<-SQL)
+      ALTER TABLE model_with_many_scopes
+      ADD UNIQUE(position, kind, "group") DEFERRABLE INITIALLY DEFERRED;
     SQL
   end
 
