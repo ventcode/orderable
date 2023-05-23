@@ -46,9 +46,7 @@ end
 
 Now run:
 
-```sh
     $ rails db:migrate
-```
 
 After execution you should see `db/structure.sql` file.
 
@@ -58,9 +56,7 @@ After execution you should see `db/structure.sql` file.
 
 For this purpose we recommend using our migration generator. In your rails' project directory type command:
 
-```sh
     $ rails generate orderable:migration {ModelName}:{FieldName} {Scopes}
-```
 
 - `ModelName`: name of model to be made orderable [^1]
 - `FieldName`: name of field to be created and used as positioning field
@@ -73,9 +69,7 @@ Generated migration should be in your `db/migrate` directory.
 **Example:**
 We have some `Image` model with foreign keys for `Owner` and `Project`, we run command
 
-```sh
     $ rails generate orderable:migration Image:position owner_id project_id
-```
 
 This will generate migration adding `position` field on `images` with unique index on `position`, `owner_id` and `project_id`.
 It should look like that:
@@ -98,9 +92,7 @@ end
 
 Next step is to migrate database with:
 
-```sh
     $ rails db:migrate
-```
 
 If everything was configured properly, after command execution you should see your new field and index in `db/structure.sql`
 
