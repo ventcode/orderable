@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
-require 'rails/generators/base'
-require 'rails/generators/active_record/migration'
+require "rails/generators/base"
+require "rails/generators/active_record/migration"
 
 module Orderable
   module Generators
     class MigrationGenerator < Rails::Generators::Base
       include ActiveRecord::Generators::Migration
 
-      source_root File.expand_path('templates', __dir__)
+      source_root File.expand_path("templates", __dir__)
 
-      argument :arguments, type: :array, banner: 'table:field scope scope'
+      argument :arguments, type: :array, banner: "table:field scope scope"
 
       def create_migration_file
         set_local_assigns!
-        migration_template 'migration.rb', File.join(db_migrate_path, "#{file_name}.rb")
+        migration_template "migration.rb", File.join(db_migrate_path, "#{file_name}.rb")
       end
 
       private
@@ -28,7 +28,7 @@ module Orderable
       end
 
       def deconstruct_argument(argument)
-        table, field = argument.split(':')
+        table, field = argument.split(":")
         [normalize_table_name(table).underscore, field.underscore]
       end
 

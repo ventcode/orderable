@@ -13,13 +13,13 @@ class ModelWithManyScopes < ActiveRecord::Base
 end
 
 class NoValidationModel < ActiveRecord::Base
-  self.table_name = 'basic_models'
+  self.table_name = "basic_models"
 
   orderable :position, validate: false
 end
 
 class NoDefaultPushLastModel < ActiveRecord::Base
-  self.table_name = 'basic_models'
+  self.table_name = "basic_models"
 
   orderable :position, default_push_last: false
 end
