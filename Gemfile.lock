@@ -3,6 +3,9 @@ PATH
   specs:
     orderable (0.1.0)
       activerecord (>= 6.0)
+      ammeter (~> 1.1.5)
+      rake (~> 13.0)
+      standalone_migrations (~> 6.1)
 
 GEM
   remote: https://rubygems.org/
@@ -137,17 +140,14 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  ammeter (~> 1.1.5)
   byebug (~> 11.1.3)
   database_cleaner-active_record (~> 2.0, >= 2.0.1)
   factory_bot_rails (~> 6.2)
   orderable!
   pg (~> 1.4.3)
-  rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 0.80)
   shoulda-matchers (~> 5.1.0)
-  standalone_migrations (~> 6.1)
 
 BUNDLED WITH
    2.2.3

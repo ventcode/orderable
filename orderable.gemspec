@@ -29,9 +29,17 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  # Uncomment to register a new dependency of your gem
+  # Dependencies
   spec.add_dependency "activerecord", ">= 6.0"
+  spec.add_dependency "ammeter", "~> 1.1.5"
+  spec.add_dependency "rake", "~> 13.0"
+  spec.add_dependency "standalone_migrations", "~> 6.1"
 
-  # For more information and examples about making a new gem, checkout our
-  # guide at: https://bundler.io/guides/creating_gem.html
+  spec.add_development_dependency "byebug", "~> 11.1.3"
+  spec.add_development_dependency "database_cleaner-active_record", "~> 2.0", ">= 2.0.1"
+  spec.add_development_dependency "factory_bot_rails", "~> 6.2"
+  spec.add_development_dependency "pg", "~> 1.4.3"
+  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "rubocop", "~> 0.80"
+  spec.add_development_dependency "shoulda-matchers", "~> 5.1.0"
 end
