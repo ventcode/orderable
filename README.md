@@ -30,7 +30,7 @@ Image.ids
 # => [4, 3, 2]
 ```
 
-After this operation our table is:
+This is `images` table content after operations:
 | id | url | position |
 |----|-----|----------|
 |2|...|2|
