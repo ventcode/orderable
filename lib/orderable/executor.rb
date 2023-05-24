@@ -2,7 +2,7 @@
 
 module Orderable
   class Executor
-    SEQUENCE_NAME = 'orderable'
+    SEQUENCE_NAME = "orderable"
 
     attr_reader :model, :field, :scope
 
@@ -45,7 +45,7 @@ module Orderable
     end
 
     def reset
-      raise(AdapterError, model.connection.adapter_name) if model.connection.adapter_name != 'PostgreSQL'
+      raise(AdapterError, model.connection.adapter_name) if model.connection.adapter_name != "PostgreSQL"
 
       with_sequence(scope_groups) do |scope_group|
         model.where(scope_group).order(field).update_all("#{field} = nextval('#{SEQUENCE_NAME}')")

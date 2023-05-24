@@ -1,0 +1,14 @@
+class <%= migration_class_name %> < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
+  def up
+    add_column :<%= table_name %>, :<%= field_name %>, :integer
+
+    execute(<<-SQL)
+      ALTER TABLE "<%= table_name %>"
+      ADD UNIQUE("<%= field_name %><%= scopes.insert(0, '", "') unless scopes.empty? %>") DEFERRABLE INITIALLY DEFERRED;
+    SQL
+  end
+
+  def down
+    remove_column :<%= table_name %>, :<%= field_name %>
+  end 
+end
