@@ -2,10 +2,10 @@
 
 module Orderable
   module ModelExtension
-    def orderable(field, scope: [], validate: true, default_push_last: true)
+    def orderable(field, scope: [], validate: true, default_push_front: true)
       executor = Executor.new(self, field, scope)
       class_eval do
-        set_orderable_callbacks(executor, default_push_last)
+        set_orderable_callbacks(executor, default_push_front)
         set_orderable_validations(field, executor) if validate
       end
       define_singleton_method(:"reset_#{field}") { executor.reset }
@@ -13,8 +13,8 @@ module Orderable
 
     private
 
-    def set_orderable_callbacks(executor, default_push_last)
-      after_initialize { executor.on_initialize(self) } if default_push_last
+    def set_orderable_callbacks(executor, default_push_front)
+      after_initialize { executor.on_initialize(self) } if default_push_front
       before_create { executor.on_create(self) }
       before_update { executor.on_update(self) }
       before_destroy { reload }

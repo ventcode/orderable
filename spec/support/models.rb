@@ -21,5 +21,5 @@ end
 class NoDefaultPushLastModel < ActiveRecord::Base
   self.table_name = "basic_models"
 
-  orderable :position, default_push_last: false
+  orderable :position, default_push_front: false
 end

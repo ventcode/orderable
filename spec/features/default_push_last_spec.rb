@@ -4,8 +4,8 @@ require "support/database_helper"
 require "support/models"
 require "factories/basic_model"
 
-RSpec.describe "Configuration option :default_push_last" do
-  context "when :default_push_last is set to true" do
+RSpec.describe "Configuration option :default_push_front" do
+  context "when :default_push_front is set to true" do
     context "without other records" do
       subject { create(:basic_model) }
 
@@ -25,10 +25,10 @@ RSpec.describe "Configuration option :default_push_last" do
     end
   end
 
-  context "when :default_push_last is set to false" do
+  context "when :default_push_front is set to false" do
     context "without records" do
       it "raises error without position specified" do
-        expect { create(:no_default_push_last_model, position: nil) }.to raise_error(ActiveRecord::RecordInvalid)
+        expect { create(:no_default_push_front_model, position: nil) }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe "Configuration option :default_push_last" do
       before { create_list(:basic_model, 2) }
 
       it "raises error without position specified" do
-        expect { create(:no_default_push_last_model, position: nil) }.to raise_error(ActiveRecord::RecordInvalid)
+        expect { create(:no_default_push_front_model, position: nil) }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end
