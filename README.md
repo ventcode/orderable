@@ -6,36 +6,36 @@ A gem that makes it easy to change the default order of Postgresql database rows
 We have Active Record model Image which is `orderable` and its positioning field is called `position`, it also have `id` and `url` fields, our current table content look like that:
 | id | url | position |
 |----|-----|----------|
-|1|...|1|
-|2|...|2|
-|3|...|0|
+|1|"a"|1|
+|2|"b"|2|
+|3|"c"|0|
 
 ```ruby
-Image.ids
-# => [2, 1, 3]
+Image.pluck(:url)
+# => ["b", "a", "c"]
 
-im = Image.create(url: "somepage.com")
-# => #<Image:HEX id: 4, url: "somepage.com", position: 3> 
-Image.ids
-# => [4, 2, 1, 3]
+im = Image.create(url: "d")
+# => #<Image:HEX id: 4, url: "d", position: 3> 
+Image.pluck(:url)
+# => ["d", "b", "a", "c"]
 
 im.update(position: 0)
 # => true
-Image.ids
-# => [2, 1, 3, 4]
+Image.pluck(:url)
+# => ["b", "a", "c", "d"]
 
-Image.find(1).destroy
-# => #<Image:HEX id: 1, url: "...", position: 2>
-Image.ids
-# => [2, 3, 4]
+Image.find_by(url: "a").destroy
+# => #<Image:HEX id: 1, url: "a", position: 2>
+Image.pluck(:url)
+# => ["b", "c", "d"]
 ```
 
 This is `images` table content after operations:
 | id | url | position |
 |----|-----|----------|
-|2|...|2|
-|3|...|1|
-|4|`somepage.com`|0|
+|2|"b"|2|
+|3|"c"|1|
+|4|"d"|0|
 
 ## Features
 
@@ -96,7 +96,7 @@ For this purpose we recommend using our migration generator. In your rails' proj
 Generated migration should be in your `db/migrate` directory.
 
 **Example:**
-We have some `Image` model with foreign keys for `Owner` and `Project`, we run command
+Consider an `Image` model with foreign keys for `Owner` and `Project`, we run command
 ```sh
     $ rails generate orderable:migration Image:position owner_id project_id
 ```
