@@ -12,22 +12,22 @@ We have Active Record model Image which is `orderable` and its positioning field
 
 ```ruby
 Image.ids
-# => [3, 1, 2]
+# => [2, 1, 3]
 
 im = Image.create(url: "somepage.com")
 # => #<Image:HEX id: 4, url: "somepage.com", position: 3> 
 Image.ids
-# => [3, 1, 2, 4]
+# => [4, 2, 1, 3]
 
 im.update(position: 0)
 # => true
 Image.ids
-# => [4, 3, 1, 2]
+# => [2, 1, 3, 4]
 
 Image.find(1).destroy
 # => #<Image:HEX id: 1, url: "...", position: 2>
 Image.ids
-# => [4, 3, 2]
+# => [2, 3, 4]
 ```
 
 This is `images` table content after operations:
@@ -133,7 +133,7 @@ Optional named arguments:
 | - | - | - |
 | `scope` | array of hashes | scope same as in unique index (uniqueness of this fields combintion would be ensured) |
 | `validate` | boolean | if `true` validates numericality of positioning field and being in range `0 <= value <= M` where `M` is biggest correct value for operation |
-| `default_push_last` | boolean | if `true`, when positioning field is not specified during creation, by default it adds it at the end (the new biggest value of this field) |
+| `default_push_front` | boolean | if `true`, when positioning field is not specified during creation, by default it adds it on front (the new biggest value of this field) |
 
 
 ```ruby

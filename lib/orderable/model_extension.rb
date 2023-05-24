@@ -3,11 +3,11 @@
 module Orderable
   module ModelExtension
     # rubocop:disable Metrics/MethodLength
-    def orderable(field, scope: [], validate: true, default_push_last: true)
+    def orderable(field, scope: [], validate: true, default_push_front: true)
       executor = Executor.new(self, field, scope)
 
       class_eval do
-        after_initialize { executor.on_initialize(self) } if default_push_last
+        after_initialize { executor.on_initialize(self) } if default_push_front
         before_create { executor.on_create(self) }
         before_update { executor.on_update(self) }
         after_destroy { executor.on_destroy(self) }

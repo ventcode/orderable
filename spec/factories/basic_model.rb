@@ -8,7 +8,7 @@ FactoryBot.define do
     sequence(:position, 0)
 
     factory :no_validation_model, class: NoValidationModel
-    factory :no_default_push_last_model, class: NoDefaultPushLastModel
+    factory :no_default_push_front_model, class: NoDefaultPushLastModel
     factory :scopes_model, class: ModelWithManyScopes do
       group { 'a' }
       kind { 'alpha' }
