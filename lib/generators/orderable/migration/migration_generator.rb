@@ -23,7 +23,7 @@ module Orderable
 
       def set_local_assigns!
         @table_name, @field_name = deconstruct_argument(arguments[0])
-        @scopes = arguments[1..(arguments.length - 1)].map(&:underscore)
+        @scopes = arguments[1..].map(&:underscore).join('", "')
         @file_name = "add_unique_orderable_#{field_name}_to_#{table_name.singularize}"
       end
 

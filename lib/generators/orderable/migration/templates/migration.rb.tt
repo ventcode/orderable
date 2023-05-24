@@ -2,13 +2,13 @@ class <%= migration_class_name %> < ActiveRecord::Migration[<%= ActiveRecord::Mi
   def up
     add_column :<%= table_name %>, :<%= field_name %>, :integer
 
-    execute <<-SQL
+    execute(<<-SQL)
       ALTER TABLE "<%= table_name %>"
-      ADD UNIQUE("<%= field_name %><%= scopes.empty? ? '' : '", "' + arguments[1..(arguments.length - 1)].join('", "') %>") DEFERRABLE INITIALLY DEFERRED;
+      ADD UNIQUE("<%= field_name %><%= scopes.insert(0, '", "') unless scopes.empty? %>") DEFERRABLE INITIALLY DEFERRED;
     SQL
   end
 
   def down
     remove_column :<%= table_name %>, :<%= field_name %>
-  end
+  end 
 end
