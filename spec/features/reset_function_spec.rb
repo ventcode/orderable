@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "support/database_helper"
-require "support/models"
-require "factories/basic_model"
-
 RSpec.describe "Function :reset" do
   context "with unsupported adapter" do
     before { allow(ModelWithManyScopes.connection).to receive(:adapter_name).and_return("SQLite3") }

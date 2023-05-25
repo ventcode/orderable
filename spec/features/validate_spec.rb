@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "support/database_helper"
-require "support/models"
-require "factories/basic_model"
-
 RSpec.describe "Configuration option :validate", :with_validations do
   context "when validate option is set to true" do
     subject { build(:basic_model) }

@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require "fixtures"
 require "orderable"
 require "database_cleaner/active_record"
 require "shoulda-matchers"
 require "factory_bot_rails"
-require "active_record/railtie"
 require "ammeter/init"
+Dir["./support/*.rb"].sort.each { |file| require file }
+Dir["./factories/*.rb"].sort.each { |file| require file }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -23,8 +25,15 @@ RSpec.configure do |config|
   end
 
   config.before(:suite) do
+    Rake::Task["db:create"].invoke
+    Rake::Task["db:migrate"].invoke
+
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.after(:suite) do
+    Rake::Task["db:drop"].invoke
   end
 
   config.around(:each) do |example|

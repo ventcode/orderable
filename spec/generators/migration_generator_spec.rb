@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 require "generators/orderable/migration/migration_generator"
+require "byebug"
 
 RSpec.describe Orderable::Generators::MigrationGenerator, type: :generator do
-  destination File.expand_path("../../tmp", __dir__)
+  destination File.expand_path("../../spec/support/tmp", __dir__)
+
+  subject(:migration) do
+    migration_file("spec/db/migrate/add_unique_orderable_position_field_to_basic_model.rb")
+  end
 
   before do
     prepare_destination
@@ -11,12 +16,10 @@ RSpec.describe Orderable::Generators::MigrationGenerator, type: :generator do
   end
 
   after do
-    FileUtils.remove_dir("#{Rails.root}/tmp/db")
+    FileUtils.remove_dir File.expand_path("../../spec/support/tmp", __dir__)
   end
 
   describe "the migration" do
-    subject { migration_file("db/migrate/add_unique_orderable_position_field_to_basic_model.rb") }
-
     it { is_expected.to exist }
     it { is_expected.to contain /add_column :basic_models, :position_field, :integer/ }
     it { is_expected.to contain /ALTER TABLE "basic_models"/ }
