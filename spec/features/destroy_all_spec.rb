@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "support/models"
-require "factories/basic_model"
-
 RSpec.describe "#destroy_all" do
   before do
     create_list(:model_with_many_scopes, 3, :random_position)

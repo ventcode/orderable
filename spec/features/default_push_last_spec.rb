@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "support/models"
-require "factories/basic_model"
-
 RSpec.describe "Configuration option :default_push_front" do
   context "when :default_push_front is set to true" do
     context "without other records" do

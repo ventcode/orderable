@@ -6,6 +6,8 @@ require "database_cleaner/active_record"
 require "shoulda-matchers"
 require "factory_bot_rails"
 require "ammeter/init"
+Dir["./support/*.rb"].sort.each { |file| require file }
+Dir["./factories/*.rb"].sort.each { |file| require file }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

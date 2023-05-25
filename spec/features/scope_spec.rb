@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "support/models"
-require "factories/basic_model"
-
 RSpec.shared_examples "does not affect outside of scope" do
   it "does not affect records outside of scope" do
     expect { action }.not_to change { out_of_scope.reload.position }

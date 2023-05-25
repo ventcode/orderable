@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "support/models"
-require "factories/basic_model"
-
 RSpec.describe "Order modification" do
   before { create_list(:basic_model, 4) }
 
