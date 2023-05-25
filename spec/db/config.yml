@@ -6,10 +6,6 @@ default: &default
   username: <%= ENV["POSTGRES_USERNAME"] %>
   password: <%= ENV["POSTGRES_PASSWORD"] %>
 
-development:
-  <<: *default
-  database: <%= ENV.fetch("POSTGRES_DATABASE", "orderable_development") %>
-
 test:
   <<: *default
   database: <%= ENV.fetch("POSTGRES_DATABASE", "orderable_test") %>

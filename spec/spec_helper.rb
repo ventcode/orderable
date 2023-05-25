@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
+require "fixtures"
 require "orderable"
 require "database_cleaner/active_record"
 require "shoulda-matchers"
 require "factory_bot_rails"
-require "active_record/railtie"
 require "ammeter/init"
 
 RSpec.configure do |config|
@@ -23,8 +23,15 @@ RSpec.configure do |config|
   end
 
   config.before(:suite) do
+    Rake::Task["db:create"].invoke
+    Rake::Task["db:migrate"].invoke
+
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.after(:suite) do
+    Rake::Task["db:drop"].invoke
   end
 
   config.around(:each) do |example|

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "support/database_helper"
 require "support/models"
 require "factories/basic_model"
 

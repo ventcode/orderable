@@ -1,0 +1,5 @@
+db:
+  migrate: spec/db/migrate
+  schema: spec/db/structure.sql
+config:
+  database: spec/db/config.yml
