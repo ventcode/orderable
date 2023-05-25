@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'byebug'
 require "fixtures"
 require "orderable"
 require "database_cleaner/active_record"

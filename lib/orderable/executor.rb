@@ -74,7 +74,7 @@ module Orderable
     def scope_groups
       return [nil] if scope.empty?
 
-      model.group(scope).count.map do |(values, _count)|
+      model.unscoped.group(scope).count.map do |(values, _count)|
         values = [values] unless values.is_a?(Array)
         scope.zip(values).to_h
       end
