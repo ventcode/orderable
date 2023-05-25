@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
+        image: postgres:15.3
         env:
           POSTGRES_PASSWORD: postgres
         ports:
@@ -44,9 +44,8 @@ jobs:
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
-
-      - name: Run Bundle Install
-        run: bundle install
-
+        with:
+          bundler-cache: true
+      
       - name: Run RSpec
         run: bundle exec rspec -fd
