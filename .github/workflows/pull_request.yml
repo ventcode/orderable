@@ -47,8 +47,5 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Setup Database
-        run: bundle exec rake db:setup
-
       - name: Run RSpec
         run: bundle exec rspec -fd
