@@ -3,8 +3,8 @@
 RSpec.describe "Order modification" do
   before { create_list(:basic_model, 4) }
 
-  let(:names) { BasicModel.pluck(:name) }
-  let(:positions) { BasicModel.pluck(:position) }
+  let(:names) { BasicModel.ordered.pluck(:name) }
+  let(:positions) { BasicModel.ordered.pluck(:position) }
 
   context "when creating a new record" do
     before { create(:basic_model, name: "e", position: 2) }

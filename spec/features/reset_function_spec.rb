@@ -15,8 +15,8 @@ RSpec.describe "Function :reset" do
       create_list(:model_with_many_scopes, 3, :random_position, kind: "beta")
     end
 
-    let(:alpha_positions) { ModelWithManyScopes.where(kind: "alpha").pluck(:position) }
-    let(:beta_positions) { ModelWithManyScopes.where(kind: "beta").pluck(:position) }
+    let(:alpha_positions) { ModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position) }
+    let(:beta_positions) { ModelWithManyScopes.ordered.where(kind: "beta").pluck(:position) }
 
     before { ModelWithManyScopes.reset_position }
 

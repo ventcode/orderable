@@ -2,13 +2,17 @@
 
 module Orderable
   module ModelExtension
-    def orderable(field, scope: [], validate: true, default_push_front: true, auto_order: true)
+    def orderable(field, scope: [], validate: true, default_push_front: true, scope_name: :ordered)
       executor = Executor.new(self, field, scope)
+
       class_eval do
         set_orderable_callbacks(executor, default_push_front)
-        default_scope { order(*scope, field => :desc) } if auto_order
         set_orderable_validations(field, executor) if validate
+        @_scope = scope
+        @_field = field
       end
+
+      define_singleton_method(scope_name) { order(*@_scope, @_field => :desc) }
       define_singleton_method(:"reset_#{field}") { executor.reset }
     end
 
