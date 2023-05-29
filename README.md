@@ -60,26 +60,10 @@ Or install it yourself as:
 
     $ gem install orderable
 
-### Use `structure.sql` instead of `schema.rb`
-This is helpful for rebuilding your DB and maintain correct indexes.
-If you already use `structure.sql` you can skip this point.
+### (Optional) Use `structure.sql` instead of `schema.rb`
+This is helpful for rebuilding your DB and maintain correct indexes, because Orderable is using deferred indexes. See [how to change your schema to structure sql](https://guides.rubyonrails.org/active_record_migrations.html#types-of-schema-dumps).
 
-If not, add this line to your `config/application.rb`:
-```ruby
-module YourApp
-  class Application < Rails::Application
-    config.load_defaults 6.0
 
-    # Add this line:
-    config.active_record.schema_format = :sql
-  end
-end
-```
-Now run:
-```sh
-    $ rails db:migrate
-```
-After execution you should see `db/structure.sql` file.
 
 ## Usage
 ### 1. Add positioning field to your table
@@ -129,12 +113,12 @@ To use orderable on added column you need to specify it in model by calling `ord
 orderable {fieldNameHash}
 ```
 Optional named arguments:
-| Attribute | Value | Description |
-| - | - | - |
-| `scope` | array of hashes | scope same as in unique index (uniqueness of this fields combintion would be ensured) |
-| `validate` | boolean | if `true` validates numericality of positioning field and being in range `0 <= value <= M` where `M` is biggest correct value for operation |
-| `default_push_front` | boolean | if `true`, when positioning field is not specified during creation, by default it adds it on front (the new biggest value of this field) |
-|`scope_name`| symbol | based on this property additional scope is added to AR model - by default scope_name is set to `ordered`
+| Attribute | Type | Default | Description |
+| - | - | - | - |
+| `scope` | array of hashes | `[]` | scope same as in unique index (uniqueness of this fields combintion would be ensured) |
+| `validate` | boolean | `true` | if `true` validates numericality of positioning field and being in range `0 <= value <= M` where `M` is biggest correct value for operation |
+| `default_push_front` | boolean | `true` | if `true`, when positioning field is not specified during creation, it adds it on front |
+|`scope_name`| symbol | `:ordered` | based on this property additional scope is added to AR model
 
 ```ruby
 class Image < ActiveRecord::Base
