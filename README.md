@@ -134,7 +134,7 @@ Optional named arguments:
 | `scope` | array of hashes | scope same as in unique index (uniqueness of this fields combintion would be ensured) |
 | `validate` | boolean | if `true` validates numericality of positioning field and being in range `0 <= value <= M` where `M` is biggest correct value for operation |
 | `default_push_front` | boolean | if `true`, when positioning field is not specified during creation, by default it adds it on front (the new biggest value of this field) |
-|`scope_name`| symbol | based on this property additional scope is added to AR model - default scope name is set to `ordered`
+|`scope_name`| symbol | based on this property additional scope is added to AR model - by default scope_name is set to `ordered`
 
 ```ruby
 class Image < ActiveRecord::Base

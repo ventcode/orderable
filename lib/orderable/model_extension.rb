@@ -8,11 +8,9 @@ module Orderable
       class_eval do
         set_orderable_callbacks(executor, default_push_front)
         set_orderable_validations(field, executor) if validate
-        @_scope = scope
-        @_field = field
+        scope scope_name, -> { order(*scope, field => :desc) }
       end
 
-      define_singleton_method(scope_name) { order(*@_scope, @_field => :desc) }
       define_singleton_method(:"reset_#{field}") { executor.reset }
     end
 
