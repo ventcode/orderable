@@ -11,22 +11,22 @@ We have Active Record model Image which is `orderable` and its positioning field
 |3|"c"|0|
 
 ```ruby
-Image.pluck(:url)
+Image.ordered.pluck(:url)
 # => ["b", "a", "c"]
 
 im = Image.create(url: "d")
 # => #<Image:HEX id: 4, url: "d", position: 3> 
-Image.pluck(:url)
+Image.ordered.pluck(:url)
 # => ["d", "b", "a", "c"]
 
 im.update(position: 0)
 # => true
-Image.pluck(:url)
+Image.ordered.pluck(:url)
 # => ["b", "a", "c", "d"]
 
 Image.find_by(url: "a").destroy
 # => #<Image:HEX id: 1, url: "a", position: 2>
-Image.pluck(:url)
+Image.ordered.pluck(:url)
 # => ["b", "c", "d"]
 ```
 
@@ -134,7 +134,7 @@ Optional named arguments:
 | `scope` | array of hashes | scope same as in unique index (uniqueness of this fields combintion would be ensured) |
 | `validate` | boolean | if `true` validates numericality of positioning field and being in range `0 <= value <= M` where `M` is biggest correct value for operation |
 | `default_push_front` | boolean | if `true`, when positioning field is not specified during creation, by default it adds it on front (the new biggest value of this field) |
-
+|`scope_name`| symbol | based on this property additional scope is added to AR model - by default scope_name is set to `ordered`
 
 ```ruby
 class Image < ActiveRecord::Base
