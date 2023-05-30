@@ -1,5 +1,3 @@
-# TODO: Add case to create record with position 1 when there are any others
-
 # frozen_string_literal: true
 
 RSpec.describe "on #create" do
@@ -39,6 +37,22 @@ RSpec.describe "on #create" do
               "a" => 0
             }
           )
+      end
+    end
+
+    context "when position attribute manually changed and is too big" do
+      let(:attrs) { { position: 6 } }
+
+      it "raises validation error" do
+        expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context "when position attribute manually changed and is too low" do
+      let(:attrs) { { position: -1 } }
+
+      it "raises validation error" do
+        expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end

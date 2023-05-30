@@ -59,6 +59,22 @@ RSpec.describe "on #update" do
           )
       end
     end
+
+    context "position value is too big" do
+      let(:position) { 6 }
+
+      it "raises validation error" do
+        expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context "position value is too big" do
+      let(:position) { -1 }
+
+      it "raises validation error" do
+        expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
   end
 
   context "model with many scopes" do

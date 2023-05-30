@@ -7,7 +7,7 @@ module Orderable
 
       class_eval do
         set_orderable_callbacks(executor)
-        set_orderable_validations(field, executor, default_push_front) if validate
+        set_orderable_validations(executor) if validate
         scope scope_name, -> { order(*scope, field => :desc) }
       end
 
@@ -23,12 +23,12 @@ module Orderable
       before_destroy { reload }
       after_destroy { executor.on_destroy(self) }
     end
-    # rubocop:enable Naming/AccessorMethodName
 
-    def set_orderable_validations(field, executor, default_push_front)
-      validates field, presence: true unless default_push_front
-      validates field, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+    def set_orderable_validations(executor)
+      validates executor.field, presence: true unless executor.default_push_front
+      validates executor.field, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
       validate { executor.validate_less_than_or_equal_to(self) }
     end
+    # rubocop:enable Naming/AccessorMethodName
   end
 end
