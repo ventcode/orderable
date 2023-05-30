@@ -2,8 +2,8 @@
 
 A gem that makes it easy to change the default order of Postgresql database rows by the addition of a modifiable integer column.
 
-### Example of usage
-Lets consider the AR **image** model that implements the `orderable` method. Its position field name is set as `position` and it has only 2 properties - `id` and `name`. **Images** table content is presented below.
+### Usage example
+Let's consider the AR **image** model that implements the `orderable` method. Its position field name is set as `position` and it has only 2 properties - `id` and `name`. **Images** table content is presented below.
 
 | id | name | position |
 |----|-----|----------|
@@ -29,99 +29,67 @@ image.update(position: 2)
 Image.ordered.pluck(:name) # => ["B", "D", "A", "C"]
 
 # On destroy
-image.destroy
+image.destroy()
 Image.ordered.pluck(:name) #=> ["B", "A", "C"]
 ```
 ## Features
 
-- Generate migration to add positioning field
+- Migration generation to add positioning field
 - Automatic reordering on CRUD operations of the Active Record models
-- Configurable positioning
+- Configurable record positioning
 
 ## Installation
 
 ### Install gem
+Install the orderable gem from Rubygems:
+
+    $ gem install orderable
+    
+_or_
+
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'orderable'
+gem 'orderable', 'VERSION'
 ```
 
-And then execute:
+Then run:
 
     $ bundle install
 
-Or install it yourself as:
-
-    $ gem install orderable
-
-### Use `structure.sql` instead of `schema.rb`
-This is helpful for rebuilding your DB and maintain correct indexes.
-If you already use `structure.sql` you can skip this point.
-
-If not, add this line to your `config/application.rb`:
-```ruby
-module YourApp
-  class Application < Rails::Application
-    config.load_defaults 6.0
-
-    # Add this line:
-    config.active_record.schema_format = :sql
-  end
-end
-```
-Now run:
-```sh
-    $ rails db:migrate
-```
-After execution you should see `db/structure.sql` file.
-
 ## Usage
-### 1. Add positioning field to your table
-For this purpose we recommend using our migration generator. In your rails' project directory type command:
+### 1. Generate Migration
+To do this, we recommend using our migration generator. In the rails project directory, type the command:
 ```sh
-    $ rails generate orderable:migration {ModelName}:{FieldName} {Scopes} 
+    $ rails generate orderable:migration model_name:field_name scopes
 ```
-- `ModelName`: name of model to be made orderable [^1]
-- `FieldName`: name of field to be created and used as positioning field
-- `Scopes`: additional scopes separated with spaces for uniqueness index for `FieldName`
+- `model_name`: name of the AR model to make it orderable [^1]
+- `field_name`: name of the field that will be used for positioning
+- `scopes`: additional scopes separated with spaces used to put unique index on the group
 
 [^1]: to be precise it is singularized table name. If you have set the custom table_name property at your AR model you can specify TableName here or simply change it manually in migration to correct value.
 
-Generated migration should be in your `db/migrate` directory.
+Generated migration will be placed in your default `db/migrate` directory.
 
 **Example:**
-Consider an `Image` model with foreign keys for `Owner` and `Project`, we run command
+Let's consider a `Image` model with foreign keys for `Owner` and `Project`. The following command is run:
 ```sh
     $ rails generate orderable:migration Image:position owner_id project_id
 ```
-This will generate migration adding `position` field on `images` with unique index on `position`, `owner_id` and `project_id`. 
-It should look like that:
-```ruby
-class AddUniqueOrderablePositionToImage < ActiveRecord::Migration[6.1]
-  def up
-    add_column :images, :position, :integer
+This will generate migration adding `position` column to `images` table with unique index on `position`, `owner_id` and `project_id`. 
 
-    execute <<-SQL
-      ALTER TABLE "images"
-        ADD UNIQUE("position", "owner_id", "project_id") DEFERRABLE INITIALLY DEFERRED
-    SQL
-  end
-  def down
-    remove_column :images, :position
-  end
-end
-```
-Next step is to migrate database with:
+The next step is to migrate database with:
 ```sh
     $ rails db:migrate
 ```
-If everything was configured properly, after command execution you should see your new field and index in `db/structure.sql`
 
-### 2. Use Orderable in your model
+**Note**
+Currently, the default Rails `schema` does not support [deferrable unique index](www.o2.pl). If you want to ensure uniqueness on orderable field, you need to change it to `structure schema`. For more information on how to do it, see the [link](https://guides.rubyonrails.org/active_record_migrations.html#types-of-schema-dumps).
+
+### 2. Include Orderable in your model
 To use orderable on added column you need to specify it in model by calling `orderable` method:
 ```ruby
-orderable {fieldNameHash}
+orderable :[orderable_field_name]
 ```
 Optional named arguments:
 | Attribute | Value | Description |
@@ -131,13 +99,6 @@ Optional named arguments:
 | `default_push_front` | boolean | if `true`, when positioning field is not specified during creation, by default it adds it on front (the new biggest value of this field) |
 |`scope_name`| symbol | based on this property additional scope is added to AR model - by default scope_name is set to `ordered`
 
-```ruby
-class Image < ActiveRecord::Base
-    orderable :position, scope: %i[owner_id product_id]
-    
-    # ...
-end
-```
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
