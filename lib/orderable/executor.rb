@@ -17,12 +17,14 @@ module Orderable
     end
 
     def on_create(record)
+      record[field] ||= affected_records(record).count
       records = affected_records(record, above: record[field])
       push(records)
     end
 
     def on_update(record)
-      return unless record.changed.include?(field)
+      return unless orderable_index_affected?(record)
+      return on_create(record) if scope_affected?(record)
 
       above, below = record.changes[field].sort
       by = record.changes[field].reduce(&:<=>)
@@ -53,6 +55,14 @@ module Orderable
     end
 
     private
+
+    def orderable_index_affected?(record)
+      (record.changed.map(&:to_sym) & ([field.to_sym] | scope)).present?
+    end
+
+    def scope_affected?(record)
+      (scope & record.changed.map(&:to_sym)).present?
+    end
 
     def affected_records(record, above: nil, below: nil)
       raise(AttributeError, field) unless model.column_for_attribute(field).type == :integer
