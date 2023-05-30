@@ -45,11 +45,11 @@ RSpec.describe "on #create" do
 
   context "model with many scopes" do
     subject { create(:model_with_many_scopes, group: group) }
-    
+
     before do
       create_list(:model_with_many_scopes, 3, group: "first")
     end
-    
+
     context "creating record within a scope" do
       let(:group) { "first" }
 

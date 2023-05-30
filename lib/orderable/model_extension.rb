@@ -16,12 +16,14 @@ module Orderable
 
     private
 
+    # rubocop:disable Naming/AccessorMethodName
     def set_orderable_callbacks(executor)
       before_create { executor.on_create(self) }
       before_update { executor.on_update(self) }
       before_destroy { reload }
       after_destroy { executor.on_destroy(self) }
     end
+    # rubocop:enable Naming/AccessorMethodName
 
     def set_orderable_validations(field, executor, default_push_front)
       validates field, presence: true unless default_push_front
