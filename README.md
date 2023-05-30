@@ -2,41 +2,36 @@
 
 A gem that makes it easy to change the default order of Postgresql database rows by the addition of a modifiable integer column.
 
-### Simple example
-We have Active Record model Image which is `orderable` and its positioning field is called `position`, it also have `id` and `url` fields, our current table content look like that:
-| id | url | position |
+### Example of usage
+Lets consider the AR **image** model that implements the `orderable` method. Its position field name is set as `position` and it has only 2 properties - `id` and `name`. **Images** table content is presented below.
+
+| id | name | position |
 |----|-----|----------|
-|1|"a"|1|
-|2|"b"|2|
-|3|"c"|0|
+|1|"A"|1|
+|2|"B"|2|
+|3|"C"|0|
 
 ```ruby
-Image.ordered.pluck(:url)
-# => ["b", "a", "c"]
+class Image < ApplicationRecord
+  orderable :position
+end
 
-im = Image.create(url: "d")
-# => #<Image:HEX id: 4, url: "d", position: 3> 
-Image.ordered.pluck(:url)
-# => ["d", "b", "a", "c"]
+Image.pluck(:name, :position) # => [["A", 1], ["B", 2], ["C", 0]]
+Image.ordered.pluck(:name) # => ["B", "A", "C"]
 
-im.update(position: 0)
-# => true
-Image.ordered.pluck(:url)
-# => ["b", "a", "c", "d"]
+# On create
+image = Image.create(name: "D")
+image.position # => 3
+Image.ordered.pluck(:name) #=> ["D", B", "A", "C"]
 
-Image.find_by(url: "a").destroy
-# => #<Image:HEX id: 1, url: "a", position: 2>
-Image.ordered.pluck(:url)
-# => ["b", "c", "d"]
+# On update
+image.update(position: 2)
+Image.ordered.pluck(:name) # => ["B", "D", "A", "C"]
+
+# On destroy
+image.destroy
+Image.ordered.pluck(:name) #=> ["B", "A", "C"]
 ```
-
-This is `images` table content after operations:
-| id | url | position |
-|----|-----|----------|
-|2|"b"|2|
-|3|"c"|1|
-|4|"d"|0|
-
 ## Features
 
 - Generate migration to add positioning field
