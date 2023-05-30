@@ -45,29 +45,54 @@ RSpec.describe "on #create" do
 
   context "model with many scopes" do
     subject { create(:model_with_many_scopes, group: group) }
-    let(:group) { "first" }
-
+    
     before do
-      create_list(:model_with_many_scopes, 3, group: group)
+      create_list(:model_with_many_scopes, 3, group: "first")
     end
-
+    
     context "creating record within a scope" do
-      it "sets the position value as the maxium one" do
+      let(:group) { "first" }
+
+      it "sets the position value to a new maximum" do
         expect { subject }
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["a", 2, "first"],
+              ["c", 2, "first"],
               ["b", 1, "first"],
-              ["c", 0, "first"]
+              ["a", 0, "first"]
             ]
           )
           .to(
             [
-              ["a", 3, "first"],
-              ["b", 2, "first"],
-              ["c", 1, "first"],
-              ["d", 0, "first"]
+              ["d", 3, "first"],
+              ["c", 2, "first"],
+              ["b", 1, "first"],
+              ["a", 0, "first"]
+            ]
+          )
+      end
+    end
+
+    context "creating record out of a scope" do
+      let(:group) { "second" }
+
+      it "sets the position to zero and doesn't change other records" do
+        expect { subject }
+          .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
+          .from(
+            [
+              ["c", 2, "first"],
+              ["b", 1, "first"],
+              ["a", 0, "first"]
+            ]
+          )
+          .to(
+            [
+              ["c", 2, "first"],
+              ["b", 1, "first"],
+              ["a", 0, "first"],
+              ["d", 0, "second"]
             ]
           )
       end

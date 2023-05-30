@@ -4,27 +4,25 @@ module Orderable
   class Executor
     SEQUENCE_NAME = "orderable"
 
-    attr_reader :model, :field, :scope
+    attr_reader :model, :field, :scope, :default_push_front
 
-    def initialize(model, field, scope)
+    def initialize(model, field, scope, **config)
       @model = model
       @field = field.to_s
       @scope = scope.is_a?(Array) ? scope : [scope]
+      @default_push_front = config[:default_push_front]
     end
-
-    def on_initialize(record)
-      record[field] ||= affected_records(record).count
-    end
-
+    
     def on_create(record)
-      record[field] ||= affected_records(record).count
+      return set_front(record) if default_push_front && record[field].nil?
+
       records = affected_records(record, above: record[field])
       push(records)
     end
 
     def on_update(record)
       return unless orderable_index_affected?(record)
-      return on_create(record) if scope_affected?(record)
+      return push_to_other_scope(record) if scope_affected?(record)
 
       above, below = record.changes[field].sort
       by = record.changes[field].reduce(&:<=>)
@@ -39,6 +37,8 @@ module Orderable
     end
 
     def validate_less_than_or_equal_to(record)
+      return if  default_push_front && record[field].nil?
+
       max_value = affected_records(record).count
       max_value -= 1 unless record.new_record?
       return if record[field] && record[field] <= max_value
@@ -75,6 +75,17 @@ module Orderable
 
     def scope_query(record)
       scope.index_with { |scope_field| record[scope_field] }
+    end
+
+    def push_to_other_scope(record)
+      return set_front(record) if default_push_front && record.changes[field].nil?
+
+      records = affected_records(record, above: record[field])
+      push(records)
+    end
+
+    def set_front(record)
+      record[field] = affected_records(record).count
     end
 
     def push(records, by: 1)

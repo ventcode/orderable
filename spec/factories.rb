@@ -27,7 +27,7 @@ FactoryBot.define do
     sequence(:name, "a")
   end
 
-  factory :no_default_push_front_model, class: NoDefaultPushLastModel do
+  factory :no_default_push_front_model, class: NoDefaultPushFrontModel do
     sequence(:name, "a")
   end
 end
