@@ -14,7 +14,7 @@ module Orderable
     end
 
     def on_create(record)
-      return on_front(record) if default_push_front && record[field].nil?
+      return reposition_to_front(record) if default_push_front && record[field].nil?
 
       records = affected_records(record, above: record[field])
       push(records)
@@ -22,7 +22,7 @@ module Orderable
 
     def on_update(record)
       return unless orderable_index_affected?(record)
-      return push_to_other_scope(record) if scope_affected?(record)
+      return push_to_another_scope(record) if scope_affected?(record)
 
       above, below = record.changes[field].sort
       by = record.changes[field].reduce(&:<=>)
@@ -77,14 +77,14 @@ module Orderable
       scope.index_with { |scope_field| record[scope_field] }
     end
 
-    def push_to_other_scope(record)
-      return on_front(record) if default_push_front && record.changes[field].nil?
+    def push_to_another_scope(record)
+      return reposition_to_front(record) if default_push_front && record.changes[field].nil?
 
       records = affected_records(record, above: record[field])
       push(records)
     end
 
-    def on_front(record)
+    def reposition_to_front(record)
       record[field] = affected_records(record).count
     end
 
