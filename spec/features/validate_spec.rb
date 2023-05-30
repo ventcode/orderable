@@ -1,11 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe "Configuration option :validate", :with_validations do
-  context "when validate option is set to true" do
+  context "when validate and option is set to true" do
     subject { build(:basic_model) }
 
-    it { should validate_presence_of(:position) }
+    it { should_not validate_presence_of(:position) }
     it { should validate_numericality_of(:position).only_integer.is_greater_than_or_equal_to(0) }
+
+    context "when default_push_last option is set to false" do
+      subject { build(:no_default_push_front_model) }
+
+      it { should validate_presence_of(:position) }
+    end
 
     describe "validates that :position is less or equal to its current maximum possible value" do
       before { create_list(:basic_model, 2) }

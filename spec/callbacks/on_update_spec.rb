@@ -76,42 +76,42 @@ RSpec.describe "on #update" do
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["a", 2, "first"],
+              ["c", 2, "first"],
               ["b", 1, "first"],
-              ["c", 0, "first"],
+              ["a", 0, "first"],
               ["d", 0, "second"]
             ]
           )
           .to(
             [
-              ["a", 3, "first"],
+              ["c", 3, "first"],
               ["b", 2, "first"],
               ["d", 1, "first"], # updated record
-              ["c", 0, "first"]
+              ["a", 0, "first"]
             ]
           )
       end
 
       context "position value set as the maximum one" do
-        let(:position) { ModelWithManyScopes.maximum(:position) }
+        let(:position) { 2 }
 
         it "sets the record position as the maximum one and increments the position of records above by 1" do
           expect { subject }
             .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
             .from(
               [
-                ["a", 2, "first"],
+                ["c", 2, "first"],
                 ["b", 1, "first"],
-                ["c", 0, "first"],
+                ["a", 0, "first"],
                 ["d", 0, "second"]
               ]
             )
             .to(
               [
-                ["a", 3, "first"],
+                ["c", 3, "first"],
                 ["d", 2, "first"], # updated record
                 ["b", 1, "first"],
-                ["c", 0, "first"]
+                ["a", 0, "first"]
               ]
             )
         end
@@ -127,18 +127,44 @@ RSpec.describe "on #update" do
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["a", 2, "first"],
+              ["c", 2, "first"],
               ["b", 1, "first"],
-              ["c", 0, "first"],
+              ["a", 0, "first"],
               ["d", 0, "second"]
             ]
           )
           .to(
             [
-              ["a", 3, "first"],
-              ["b", 2, "first"],
-              ["c", 1, "first"],
-              ["d", 0, "first"] # updated record
+              ["d", 3, "first"], # updated record
+              ["c", 2, "first"],
+              ["b", 1, "first"],
+              ["a", 0, "first"]
+            ]
+          )
+      end
+    end
+
+    context "other property updated" do
+      subject { record.update!(name: "new name") }
+      let!(:record) { create(:model_with_many_scopes, group: "first") }
+
+      it "sets record name to new name and change neither position nor scope" do
+        expect { subject }
+          .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
+          .from(
+            [
+              ["d", 3, "first"],
+              ["c", 2, "first"],
+              ["b", 1, "first"],
+              ["a", 0, "first"]
+            ]
+          )
+          .to(
+            [
+              ["new name", 3, "first"],
+              ["c", 2, "first"],
+              ["b", 1, "first"],
+              ["a", 0, "first"]
             ]
           )
       end
