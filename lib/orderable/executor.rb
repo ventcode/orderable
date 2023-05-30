@@ -12,9 +12,9 @@ module Orderable
       @scope = scope.is_a?(Array) ? scope : [scope]
       @default_push_front = config[:default_push_front]
     end
-    
+
     def on_create(record)
-      return set_front(record) if default_push_front && record[field].nil?
+      return on_front(record) if default_push_front && record[field].nil?
 
       records = affected_records(record, above: record[field])
       push(records)
@@ -37,7 +37,7 @@ module Orderable
     end
 
     def validate_less_than_or_equal_to(record)
-      return if  default_push_front && record[field].nil?
+      return if default_push_front && record[field].nil?
 
       max_value = affected_records(record).count
       max_value -= 1 unless record.new_record?
@@ -78,13 +78,13 @@ module Orderable
     end
 
     def push_to_other_scope(record)
-      return set_front(record) if default_push_front && record.changes[field].nil?
+      return on_front(record) if default_push_front && record.changes[field].nil?
 
       records = affected_records(record, above: record[field])
       push(records)
     end
 
-    def set_front(record)
+    def on_front(record)
       record[field] = affected_records(record).count
     end
 
