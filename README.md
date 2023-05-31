@@ -17,8 +17,8 @@ A gem that makes it easy to change the default order of PostgreSQL database rows
 * [Usage examples](#usage-examples)
   * [Model with scope](#model-with-scope)
   * [Default push front](#default-push-front)
-	* [Disabling validation](#disabling-validation)
-	* [Custom scope name](#custom-scope-name)
+  * [Disabling validation](#disabling-validation)
+  * [Custom scope name](#custom-scope-name)
 * [License](#license)
 ### Basic usage
 Let's consider the AR **image** model that implements the `orderable` method. Its position field name is set as `position` and it has only 2 properties - `id` and `name`. **Images** table content is presented below.
@@ -40,7 +40,7 @@ Image.ordered.pluck(:name) # => ["B", "A", "C"]
 # on create
 image = Image.create(name: "D")
 image.position # => 3
-Image.ordered.pluck(:name) #=> ["D", B", "A", "C"]
+Image.ordered.pluck(:name) # => ["D", B", "A", "C"]
 
 # on update
 image.update(position: 2)
@@ -48,7 +48,7 @@ Image.ordered.pluck(:name) # => ["B", "D", "A", "C"]
 
 # on destroy
 image.destroy()
-Image.ordered.pluck(:name) #=> ["B", "A", "C"]
+Image.ordered.pluck(:name) # => ["B", "A", "C"]
 ```
 ### Installation
 
@@ -91,20 +91,20 @@ The next step is to migrate database with:
     $ rails db:migrate
 
 ***Note***
-*Currently, the default Rails `schema` does not support [deferrable unique index](https://dba.stackexchange.com/questions/166082/deferrable-unique-index-in-postgres). If you want to ensure uniqueness on orderable field, you need to change it to `structure schema`. For more information on how to do it, see the [link](https://guides.rubyonrails.org/active_record_migrations.html#types-of-schema-dumps).*
+*Currently, the default Rails `schema` does not support [deferrable unique index](https://dba.stackexchange.com/questions/166082/deferrable-unique-index-in-postgres). If you want to ensure uniqueness on orderable field after rebuilding the database from schema, you need to change it to `structure schema`. For more information on how to do it, see the [link](https://guides.rubyonrails.org/active_record_migrations.html#types-of-schema-dumps).*
 
 ### Include orderable in AR model
 To use orderable on added column you need to specify it in model by calling `orderable` method:
 ```ruby
 orderable :orderable_field_name
 ```
-Optional named arguments:
-| Attribute | Value | Description |
-| - | - | - |
-| `scope` | array of symbols | scope same as in unique index (uniqueness of this fields combination would be ensured) |
-| `validate` | boolean | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
-| `default_push_front` | boolean | if `true`, it sets a new record in front of other records unless position field is passed directly
-|`scope_name`| symbol | based on this property additional scope is added to AR model - by default it is set to `ordered`
+**Optional named arguments:**
+| Attribute | Value | Default | Description |
+| - | - | - | - |
+| `scope` | array of symbols | `[]` | scope same as in unique index (uniqueness of this fields combination would be ensured) |
+| `validate` | boolean | `true` | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
+| `default_push_front` | boolean | `true` | if `true`, it sets a new record in front of other records unless position field is passed directly |
+|`scope_name`| symbol | `ordered` | based on this property additional scope is added to AR model |
 
 ### Usage Examples
 
@@ -116,24 +116,24 @@ class Image < ActiveRecord::Base
 end
 
 Image.pluck(:name, :position, :group) # => [["A", 0, "G_1"], ["E", 1, "G_2"], ["C", 2, "G_1"], ["B", 1, "G_1"], ["D", 0, "G_2"]]
-Image.ordered.pluck(:name) # => ["C", "B", "A", "E", "D"]
+Image.ordered.pluck(:name) # => [["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["E", 1, "G_2"], ["D", 0, "G_2"]]
 
 # on create
 image = Image.create(name: "F", group: "G_1")
 image.position # => 3
-Image.ordered.pluck(:name) #=> ["F" ,"C", "B", "A", "E", "D"]
+Image.ordered.pluck(:name, :position, :group) # => [["F", 3, "G_1"], ["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["E", 1, "G_2"], ["D", 0, "G_2"]]
 
 # on update
 image.update(group: "G_2")
 image.position # => 2
-Image.ordered.pluck(:name) #=> ["C", "B", "A", "F", "E", "D"]
+Image.ordered.pluck(:name, :position, :group) # => [["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["F", 2, "G_2"], ["E", 1, "G_2"], ["D", 0, "G_2"]]
 
 image.update(position: 1)
-Image.ordered.pluck(:name) #=> ["C", "B", "A", "E", "F", "D"]
+Image.ordered.pluck(:name, :position, :group) # => [["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["E", 2, "G_2"], ["F", 1, "G_2"], ["D", 0, "G_2"]]
 
 # on destroy
 image.destroy()
-Image.ordered.pluck(:name) #=> ["F" ,"C", "B", "A", "E", "D"]
+Image.ordered.pluck(:name, :position, :group) # => [["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["E", 1, "G_2"], ["D", 0, "G_2"]]
 ```
 #### Default push front
 
