@@ -70,28 +70,25 @@ Then run:
 
 ### Generate migration
 In the *Rails* project directory, type the command:
-```sh
-    $ rails generate orderable:migration model_name:field_name scopes
-```
-- `model_name`: name of the AR model to make it orderable [^1]
-- `field_name`: name of the field that will be used for positioning
-- `scopes`: additional scopes separated with spaces used to put unique index on the group
 
-[^1]: to be precise it is singularized table name. If you have set the custom `table_name` property at your AR model you can specify TableName here or simply change it manually in migration to correct value.
+    $ rails generate orderable:migration table_name:field_name scopes
+
+- `table_name`: name of the table for which positioning field migration will be generated
+- `field_name`: name of the new column that will be added and used for positioning
+- `scopes`: additional scopes separated with spaces used to put unique index on the whole group
 
 Generated migration will be placed in your default migrations directory `db/migrate` .
 
 **Example:**
 Let's consider an `Image` model with foreign keys for `Owner` and `Project`. The following command should be run:
-```sh
+
     $ rails generate orderable:migration Image:position owner_id project_id
-```
+
 This will generate migration adding `position` column to `images` table with unique index on `position`, `owner_id` and `project_id`. 
 
 The next step is to migrate database with:
-```sh
+
     $ rails db:migrate
-```
 
 ***Note***
 *Currently, the default Rails `schema` does not support [deferrable unique index](https://dba.stackexchange.com/questions/166082/deferrable-unique-index-in-postgres). If you want to ensure uniqueness on orderable field, you need to change it to `structure schema`. For more information on how to do it, see the [link](https://guides.rubyonrails.org/active_record_migrations.html#types-of-schema-dumps).*
@@ -104,7 +101,7 @@ orderable :orderable_field_name
 Optional named arguments:
 | Attribute | Value | Description |
 | - | - | - |
-| `scope` | array of symbols | scope same as in unique index (uniqueness of this fields combintion would be ensured) |
+| `scope` | array of symbols | scope same as in unique index (uniqueness of this fields combination would be ensured) |
 | `validate` | boolean | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
 | `default_push_front` | boolean | if `true`, it sets a new record in front of other records unless position field is passed directly
 |`scope_name`| symbol | based on this property additional scope is added to AR model - by default it is set to `ordered`
@@ -142,13 +139,20 @@ Image.ordered.pluck(:name) #=> ["F" ,"C", "B", "A", "E", "D"]
 
 ```ruby
 class Image < ActiveRecord::Base
+  orderable :position, default_push_front: true # by default
+end
+
+class Post < ActiveRecord::Base
   orderable :position, default_push_front: false
 end
 
-Image.create(name: "A") # => validation error (position is not specified)
-Image.create(name: "A", position: 0) # => OK
-Image.create(name: "B", position: 0) # => OK
-Image.ordered.pluck(:name, :position) # => [["A", 1], ["B", 0]]
+image= Image.create(name: "A") # => OK
+image.position # => 0
+
+Post.create(title: "A") # => validation error (position is not specified)
+Post.create(title: "A", position: 0) # => OK
+Post.create(title: "B", position: 0) # => OK
+Post.ordered.pluck(:title, :position) # => [["A", 1], ["B", 0]]
 ```
 #### Disabling validation
 
@@ -176,6 +180,7 @@ class Image < ActiveRecord::Base
 end
 
 Image.pluck(:name, :position) # => [["A", 0], ["B, 1"]]
+Image.ordered # => no method error (scope does not exist)
 Image.ordered_by_orderable.pluck(:name, :position) # => [["B", 1], ["A", 0]]
 ```
 
