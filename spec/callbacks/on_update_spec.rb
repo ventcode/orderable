@@ -186,4 +186,242 @@ RSpec.describe "on #update" do
       end
     end
   end
+
+  context "model without validation" do
+    subject { record.update(position: position) }
+
+    before do
+      create_list(:no_validation_model, 3)
+      (7..9).each { |p| create(:no_validation_model, position: p) }
+    end
+
+    context "when position attribute is in incrementing sequence" do
+      let!(:record) { create(:no_validation_model) }
+      let(:position) { 1 }
+
+      it "sets the record position to 1 and adjust other sequence members" do
+        expect { subject }
+          .to change { NoValidationModel.ordered.pluck(:name, :position).to_h }
+          .from(
+            {
+              "g" => 10,
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          ).to(
+            {
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "c" => 3,
+              "b" => 2,
+              "g" => 1,
+              "a" => 0
+            }
+          )
+      end
+    end
+
+    context "when position attribute is not in incrementing sequence" do
+      let!(:record) { create(:no_validation_model) }
+      let(:position) { 4 }
+
+      it "sets the record position to 4 and don't do anything with other records" do
+        expect { subject }
+          .to change { NoValidationModel.ordered.pluck(:name, :position).to_h }
+          .from(
+            {
+              "g" => 10,
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          ).to(
+            {
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "g" => 4,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          )
+      end
+    end
+  end
+
+  context "model without validation and with one scope" do
+    subject { record.update(kind: "first", position: position) }
+
+    before do
+      create_list(:no_validation_model_with_one_scope, 3, kind: "first")
+      (7..9).each { |p| create(:no_validation_model_with_one_scope, position: p, kind: "first") }
+    end
+
+    context "when changing scope" do
+      let!(:record) { create(:no_validation_model_with_one_scope, kind: "second") }
+
+      context "when position attribute isn't specified" do
+        let(:position) { nil }
+
+        it "sets the record position to maximum_of_scope + 1 and don't do anything with other records" do
+          expect { subject }
+            .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position, :kind) }
+            .from(
+              [
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["c", 2, "first"],
+                ["b", 1, "first"],
+                ["a", 0, "first"],
+                ["g", 0, "second"]
+              ]
+            ).to(
+              [
+                ["g", 10, "first"],
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["c", 2, "first"],
+                ["b", 1, "first"],
+                ["a", 0, "first"]
+              ]
+            )
+        end
+      end
+
+      context "when position attribute is in incrementing sequence" do
+        let(:position) { 1 }
+
+        it "sets the record position to 1 and adjust other sequence members" do
+          expect { subject }
+            .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position, :kind) }
+            .from(
+              [
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["c", 2, "first"],
+                ["b", 1, "first"],
+                ["a", 0, "first"],
+                ["g", 0, "second"]
+              ]
+            ).to(
+              [
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["c", 3, "first"],
+                ["b", 2, "first"],
+                ["g", 1, "first"],
+                ["a", 0, "first"]
+              ]
+            )
+        end
+      end
+
+      context "when position attribute isn't in any incrementing sequence" do
+        let(:position) { 4 }
+
+        it "sets the record position to 4 and don't do anything with other records" do
+          expect { subject }
+            .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position, :kind) }
+            .from(
+              [
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["c", 2, "first"],
+                ["b", 1, "first"],
+                ["a", 0, "first"],
+                ["g", 0, "second"]
+              ]
+            ).to(
+              [
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["g", 4, "first"],
+                ["c", 2, "first"],
+                ["b", 1, "first"],
+                ["a", 0, "first"]
+              ]
+            )
+        end
+      end
+    end
+
+    context "when changing position inside scope" do
+      let!(:record) { create(:no_validation_model_with_one_scope, kind: "first") }
+
+      context "when position isn't in incrementing sequence" do
+        let(:position) { 4 }
+
+        it "sets the record position to 4 and don't do anything with other records" do
+          expect { subject }
+            .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position, :kind) }
+            .from(
+              [
+                ["g", 10, "first"],
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["c", 2, "first"],
+                ["b", 1, "first"],
+                ["a", 0, "first"]
+              ]
+            ).to(
+              [
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["g", 4, "first"],
+                ["c", 2, "first"],
+                ["b", 1, "first"],
+                ["a", 0, "first"]
+              ]
+            )
+        end
+      end
+
+      context "when position is in incrementing sequence" do
+        let(:position) { 1 }
+
+        it "sets the record position to 4 and don't do anything with other records" do
+          expect { subject }
+            .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position, :kind) }
+            .from(
+              [
+                ["g", 10, "first"],
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["c", 2, "first"],
+                ["b", 1, "first"],
+                ["a", 0, "first"]
+              ]
+            ).to(
+              [
+                ["f", 9, "first"],
+                ["e", 8, "first"],
+                ["d", 7, "first"],
+                ["c", 3, "first"],
+                ["b", 2, "first"],
+                ["g", 1, "first"],
+                ["a", 0, "first"]
+              ]
+            )
+        end
+      end
+    end
+  end
 end

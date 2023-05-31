@@ -4,13 +4,14 @@ module Orderable
   class Executor
     SEQUENCE_NAME = "orderable"
 
-    attr_reader :model, :field, :scope, :default_push_front
+    attr_reader :model, :field, :scope, :default_push_front, :validate
 
     def initialize(model, field, scope, **config)
       @model = model
       @field = field.to_s
       @scope = scope.is_a?(Array) ? scope : [scope]
       @default_push_front = config[:default_push_front]
+      @validate = config[:validate]
     end
 
     def on_create(record)
@@ -56,6 +57,16 @@ module Orderable
 
     private
 
+    def affected_records(record, above: nil, below: nil)
+      raise(AttributeError, field) unless model.column_for_attribute(field).type == :integer
+
+      records = model.where(scope_query(record))
+      records = find_incrementing_sequence(records, record)
+      records = records.where("#{field} >= ?", above) if above
+      records = records.where("#{field} <= ?", below) if below
+      records.all
+    end
+
     def orderable_index_affected?(record)
       (record.changed.map(&:to_sym) & ([field.to_sym] | scope)).present?
     end
@@ -64,13 +75,23 @@ module Orderable
       (scope & record.changed.map(&:to_sym)).present?
     end
 
-    def affected_records(record, above: nil, below: nil)
-      raise(AttributeError, field) unless model.column_for_attribute(field).type == :integer
+    def find_incrementing_sequence(records, record)
+      return records if validate
 
-      records = model.where(scope_query(record))
-      records = records.where("#{field} >= ?", above) if above
-      records = records.where("#{field} <= ?", below) if below
-      records.all
+      sequence = records
+                 .chunk_while { |a, b| elements_of_incrementing_sequence?(a, b) }
+                 .find { |g| g.map(&:position).include?(field_value(record)) }
+      return model.none unless sequence
+
+      records.where(id: sequence.map(&:id))
+    end
+
+    def elements_of_incrementing_sequence?(record_one, record_two)
+      record_one[field] + 1 == record_two[field]
+    end
+
+    def field_value(record)
+      record.changes[field]&.second || record.position
     end
 
     def scope_query(record)
@@ -78,14 +99,17 @@ module Orderable
     end
 
     def push_to_another_scope(record)
-      return reposition_to_front(record) if default_push_front && record.changes[field].nil?
+      return reposition_to_front(record) if default_push_front && record.changes[field]&.second.nil?
 
       records = affected_records(record, above: record[field])
       push(records)
     end
 
     def reposition_to_front(record)
-      record[field] = affected_records(record).count
+      max_value = model.where(scope_query(record)).maximum(field)
+      return record[field] = 0 if max_value.nil?
+
+      record[field] = max_value + 1
     end
 
     def push(records, by: 1)

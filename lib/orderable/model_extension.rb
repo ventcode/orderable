@@ -3,7 +3,7 @@
 module Orderable
   module ModelExtension
     def orderable(field, scope: [], validate: true, default_push_front: true, scope_name: :ordered)
-      executor = Executor.new(self, field, scope, default_push_front: default_push_front)
+      executor = Executor.new(self, field, scope, default_push_front: default_push_front, validate: validate)
 
       class_eval do
         set_orderable_callbacks(executor)

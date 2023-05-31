@@ -112,4 +112,100 @@ RSpec.describe "on #create" do
       end
     end
   end
+
+  context "model without validation" do
+    subject { create(:no_validation_model, position: position) }
+
+    before do
+      create_list(:no_validation_model, 3)
+      (7..9).each { |p| create(:no_validation_model, position: p) }
+    end
+
+    context "when position attribute is in incrementing sequence" do
+      let(:position) { 1 }
+
+      it "sets the record position to 1 and adjust other sequence members" do
+        expect { subject }
+          .to change { NoValidationModel.ordered.pluck(:name, :position).to_h }
+          .from(
+            {
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          ).to(
+            {
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "c" => 3,
+              "b" => 2,
+              "g" => 1,
+              "a" => 0
+            }
+          )
+      end
+    end
+
+    context "when position attribute is not specified" do
+      let(:position) { nil }
+
+      it "sets the record position to maximum + 1 and don't do anything with other records" do
+        expect { subject }
+          .to change { NoValidationModel.ordered.pluck(:name, :position).to_h }
+          .from(
+            {
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          ).to(
+            {
+              "g" => 10,
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          )
+      end
+    end
+
+    context "when position attribute is not in incrementing sequence" do
+      let(:position) { 4 }
+
+      it "sets the record position to 4 and don't do anything with other records" do
+        expect { subject }
+          .to change { NoValidationModel.ordered.pluck(:name, :position).to_h }
+          .from(
+            {
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          ).to(
+            {
+              "f" => 9,
+              "e" => 8,
+              "d" => 7,
+              "g" => 4,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          )
+      end
+    end
+  end
 end
