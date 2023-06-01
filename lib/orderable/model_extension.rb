@@ -2,8 +2,13 @@
 
 module Orderable
   module ModelExtension
-    def orderable(field, scope: [], validate: true, default_push_front: true, scope_name: :ordered,
-                  order: :desc)
+    def orderable( # rubocop:disable Metrics/ParameterLists
+      field, scope: [],
+      validate: true,
+      default_push_front: true,
+      scope_name: :ordered,
+      order: :desc
+    )
       executor = Executor.new(self, field, scope, default_push_front: default_push_front)
 
       class_eval do
