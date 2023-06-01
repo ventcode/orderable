@@ -29,3 +29,15 @@ class NoDefaultPushFrontModel < ActiveRecord::Base
 
   orderable :position, default_push_front: false
 end
+
+class CustomScopeNameModel < ActiveRecord::Base
+  self.table_name = "basic_models"
+
+  orderable :position, scope_name: :ordered_by_orderable
+end
+
+class AscOrderModel < ActiveRecord::Base
+  self.table_name = "basic_models"
+
+  orderable :position, order: :asc
+end
