@@ -18,7 +18,13 @@ class NoValidationModel < ActiveRecord::Base
   orderable :position, validate: false
 end
 
-class NoDefaultPushLastModel < ActiveRecord::Base
+class NoValidationModelWithOneScope < ActiveRecord::Base
+  self.table_name = "model_with_one_scopes"
+
+  orderable :position, scope: :kind, validate: false
+end
+
+class NoDefaultPushFrontModel < ActiveRecord::Base
   self.table_name = "basic_models"
 
   orderable :position, default_push_front: false
