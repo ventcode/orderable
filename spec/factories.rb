@@ -7,7 +7,7 @@ FactoryBot.define do
     sequence(:name, "a")
 
     factory :no_validation_model, class: NoValidationModel
-    factory :no_default_push_front_model, class: NoDefaultPushLastModel
+    factory :no_default_push_front_model, class: NoDefaultPushFrontModel
     factory :custom_scope_name_model, class: CustomScopeNameModel
     factory :asc_order_model, class: AscOrderModel
   end
@@ -15,6 +15,8 @@ FactoryBot.define do
   factory :model_with_one_scope, class: ModelWithOneScope do
     sequence(:name, "a")
     kind { "alpha" }
+
+    factory :no_validation_model_with_one_scope, class: NoValidationModelWithOneScope
   end
 
   factory :model_with_many_scopes, class: ModelWithManyScopes do
