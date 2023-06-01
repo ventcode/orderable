@@ -78,14 +78,17 @@ module Orderable
     end
 
     def push_to_another_scope(record)
-      return reposition_to_front(record) if default_push_front && record.changes[field].nil?
+      return reposition_to_front(record) if default_push_front && record.changes[field]&.second.nil?
 
       records = affected_records(record, above: record[field])
       push(records)
     end
 
     def reposition_to_front(record)
-      record[field] = affected_records(record).count
+      max_value = model.where(scope_query(record)).maximum(field)
+      return record[field] = 0 if max_value.nil?
+
+      record[field] = max_value + 1
     end
 
     def push(records, by: 1)

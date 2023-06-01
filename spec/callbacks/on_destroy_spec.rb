@@ -158,5 +158,139 @@ RSpec.describe "on #destroy" do
           )
       end
     end
+
+    context "with model without validation" do
+      subject { record.destroy }
+
+      before do
+        create_list(:no_validation_model, 3)
+        (7..9).each { |p| create(:no_validation_model, position: p) }
+      end
+
+      context "when record is between other records" do
+        let!(:record) { create(:no_validation_model, position: 5) }
+
+        it "destroys a record and decrement records above" do
+          expect { subject }
+            .to change { NoValidationModel.ordered.pluck(:name, :position).to_h }
+            .from(
+              {
+                "f" => 10,
+                "e" => 9,
+                "d" => 8,
+                "g" => 5,
+                "c" => 2,
+                "b" => 1,
+                "a" => 0
+              }
+            ).to(
+              {
+                "f" => 9,
+                "e" => 8,
+                "d" => 7,
+                "c" => 2,
+                "b" => 1,
+                "a" => 0
+              }
+            )
+        end
+      end
+
+      context "when record is on front of other records" do
+        let!(:record) { create(:no_validation_model, position: -1) }
+
+        it "destroys a record and decrement all other recods" do
+          expect { subject }
+            .to change { NoValidationModel.ordered.pluck(:name, :position).to_h }
+            .from(
+              {
+                "f" => 10,
+                "e" => 9,
+                "d" => 8,
+                "c" => 3,
+                "b" => 2,
+                "a" => 1,
+                "g" => -1
+              }
+            ).to(
+              {
+                "f" => 9,
+                "e" => 8,
+                "d" => 7,
+                "c" => 2,
+                "b" => 1,
+                "a" => 0
+              }
+            )
+        end
+      end
+    end
+
+    context "with model without validation with one scope" do
+      subject { record.destroy }
+
+      before do
+        create_list(:no_validation_model_with_one_scope, 3)
+        (7..9).each { |p| create(:no_validation_model_with_one_scope, position: p) }
+      end
+
+      context "when record is between other records" do
+        let!(:record) { create(:no_validation_model_with_one_scope, position: 5) }
+
+        it "destroys a record and decrement records above" do
+          expect { subject }
+            .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position).to_h }
+            .from(
+              {
+                "f" => 10,
+                "e" => 9,
+                "d" => 8,
+                "g" => 5,
+                "c" => 2,
+                "b" => 1,
+                "a" => 0
+              }
+            ).to(
+              {
+                "f" => 9,
+                "e" => 8,
+                "d" => 7,
+                "c" => 2,
+                "b" => 1,
+                "a" => 0
+              }
+            )
+        end
+      end
+
+      context "when record is on front of other records" do
+        let!(:record) { create(:no_validation_model_with_one_scope, position: -1) }
+
+        it "destroys a record and decrement all other records" do
+          expect { subject }
+            .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position).to_h }
+            .from(
+              {
+                "f" => 10,
+                "e" => 9,
+                "d" => 8,
+                "c" => 3,
+                "b" => 2,
+                "a" => 1,
+                "g" => -1
+              }
+            ).to(
+              {
+                "f" => 9,
+                "e" => 8,
+                "d" => 7,
+                "c" => 2,
+                "b" => 1,
+                "a" => 0
+              }
+            )
+        end
+      end
+    end
   end
 end

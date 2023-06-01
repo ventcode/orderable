@@ -27,6 +27,11 @@ FactoryBot.define do
     sequence(:name, "a")
   end
 
+  factory :no_validation_model_with_one_scope, class: NoValidationModelWithOneScope do
+    sequence(:name, "a")
+    kind { "alpha" }
+  end
+
   factory :no_default_push_front_model, class: NoDefaultPushFrontModel do
     sequence(:name, "a")
   end
