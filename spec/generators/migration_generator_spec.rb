@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "generators/orderable/migration/migration_generator"
-require "byebug"
 
 RSpec.describe Orderable::Generators::MigrationGenerator, type: :generator do
   destination File.expand_path("../../spec/support/tmp", __dir__)
