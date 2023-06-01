@@ -3,7 +3,7 @@
 module Orderable
   class Executor
     SEQUENCE_NAME = "orderable"
-    BEGINNING_INDEX = 0
+    INITIAL_POSITIONING_FIELD_VALUE = 0
 
     attr_reader :model, :field, :scope, :default_push_front
 
@@ -87,7 +87,7 @@ module Orderable
 
     def reposition_to_front(record)
       max_value = model.where(scope_query(record)).maximum(field)
-      return record[field] = BEGINNING_INDEX if max_value.nil?
+      return record[field] = INITIAL_POSITIONING_FIELD_VALUE if max_value.nil?
 
       record[field] = max_value + 1
     end
@@ -108,7 +108,7 @@ module Orderable
     def with_sequence(collection)
       return unless block_given?
 
-      model.connection.execute("CREATE TEMP SEQUENCE #{SEQUENCE_NAME} MINVALUE #{BEGINNING_INDEX}")
+      model.connection.execute("CREATE TEMP SEQUENCE #{SEQUENCE_NAME} MINVALUE #{INITIAL_POSITIONING_FIELD_VALUE}")
 
       collection.each_with_index do |element, index|
         model.connection.execute("ALTER SEQUENCE #{SEQUENCE_NAME} RESTART") unless index.zero?
