@@ -5,6 +5,11 @@ require_relative "./support/models"
 FactoryBot.define do
   factory :basic_model, class: BasicModel do
     sequence(:name, "a")
+
+    factory :no_validation_model, class: NoValidationModel
+    factory :no_default_push_front_model, class: NoDefaultPushLastModel
+    factory :custom_scope_name_model, class: CustomScopeNameModel
+    factory :asc_order_model, class: AscOrderModel
   end
 
   factory :model_with_one_scope, class: ModelWithOneScope do
@@ -21,13 +26,5 @@ FactoryBot.define do
       position { rand(10) }
       to_create { |instance| instance.save(validate: false) }
     end
-  end
-
-  factory :no_validation_model, class: NoValidationModel do
-    sequence(:name, "a")
-  end
-
-  factory :no_default_push_front_model, class: NoDefaultPushLastModel do
-    sequence(:name, "a")
   end
 end

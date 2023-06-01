@@ -2,13 +2,15 @@
 
 module Orderable
   module ModelExtension
-    def orderable(field, scope: [], validate: true, default_push_front: true, scope_name: :ordered)
+    # TODO: order property should be placed in config
+    def orderable(field, scope: [], validate: true, default_push_front: true, scope_name: :ordered,
+                  order: :desc)
       executor = Executor.new(self, field, scope)
 
       class_eval do
         set_orderable_callbacks(executor, default_push_front)
         set_orderable_validations(field, executor) if validate
-        scope scope_name, -> { order(*scope, field => :desc) }
+        scope scope_name, -> { order(*scope, field => order) }
       end
 
       define_singleton_method(:"reset_#{field}") { executor.reset }
