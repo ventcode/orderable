@@ -2,7 +2,7 @@
 
 module Orderable
   module ModelExtension
-    def orderable( # rubocop:disable Metrics/ParameterLists
+    def orderable(
       field, scope: [],
       validate: true,
       default_push_front: true,

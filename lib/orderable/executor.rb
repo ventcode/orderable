@@ -81,14 +81,21 @@ module Orderable
     end
 
     def push_to_another_scope(record)
+      adjust_in_previous_scope(record)
+      return reposition_to_front(record) if default_push_front && record.changes[field]&.second.nil?
+
+      adjust_in_current_scope(record)
+    end
+
+    def adjust_in_current_scope(record)
+      records = affected_records(record, above: record[field])
+      push(records)
+    end
+
+    def adjust_in_previous_scope(record)
       previous_scope_attributes = attributes_before_update(record)
       records = affected_records(previous_scope_attributes, above: previous_scope_attributes[field])
       push(records, by: -1)
-
-      return reposition_to_front(record) if default_push_front && record.changes[field]&.second.nil?
-
-      records = affected_records(record, above: record[field])
-      push(records)
     end
 
     def attributes_before_update(record)
