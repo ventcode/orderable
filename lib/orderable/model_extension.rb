@@ -2,19 +2,18 @@
 
 module Orderable
   module ModelExtension
-    def orderable( # rubocop:disable Metrics/ParameterLists
+    def orderable(
       field, scope: [],
       validate: true,
       default_push_front: true,
-      scope_name: :ordered,
-      order: :desc
+      scope_name: :ordered
     )
       executor = Executor.new(self, field, scope, default_push_front: default_push_front)
 
       class_eval do
         set_orderable_callbacks(executor)
         set_orderable_validations(executor) if validate
-        scope scope_name, -> { order(*scope, field => order) }
+        scope scope_name, ->(order_direction = :desc) { order(*scope, field => order_direction) }
       end
 
       define_singleton_method(:"reset_#{field}") { executor.reset }
