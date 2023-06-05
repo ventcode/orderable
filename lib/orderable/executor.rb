@@ -41,6 +41,8 @@ module Orderable
       return if default_push_front && record[field].nil?
 
       max_value = affected_records(record).count
+      return if max_value.zero?
+
       max_value -= 1 unless record.new_record?
       return if record[field] && record[field] <= max_value
 
@@ -75,14 +77,22 @@ module Orderable
     end
 
     def scope_query(record)
-      scope.index_with { |scope_field| record[scope_field] }
+      scope.index_with { |scope_field| record[scope_field.to_s] }
     end
 
     def push_to_another_scope(record)
+      previous_scope_attributes = attributes_before_update(record)
+      records = affected_records(previous_scope_attributes, above: previous_scope_attributes[field])
+      push(records, by: -1)
+
       return reposition_to_front(record) if default_push_front && record.changes[field]&.second.nil?
 
       records = affected_records(record, above: record[field])
       push(records)
+    end
+
+    def attributes_before_update(record)
+      record.attributes.merge(record.changes.transform_values { |val| val[0] })
     end
 
     def reposition_to_front(record)

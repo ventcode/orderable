@@ -185,6 +185,32 @@ RSpec.describe "on #update" do
           )
       end
     end
+
+    context "only scope property updated" do
+      subject { record.update!(group: "second") }
+      let!(:record) { create(:model_with_many_scopes, group: "first", position: 2) }
+
+      it "sets record position as 0 by default and increments position of other records in scope by 1" do
+        expect { subject }
+          .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
+          .from(
+            [
+              ["c", 3, "first"],
+              ["d", 2, "first"],
+              ["b", 1, "first"],
+              ["a", 0, "first"]
+            ]
+          )
+          .to(
+            [
+              ["c", 2, "first"],
+              ["b", 1, "first"],
+              ["a", 0, "first"],
+              ["d", 0, "second"] # updated record
+            ]
+          )
+      end
+    end
   end
 
   context "model without validation" do
