@@ -92,7 +92,7 @@ module Orderable
     end
 
     def attributes_before_update(record)
-      record.attributes.merge(record.changes.transform_values { |val| val[0] })
+      record.attributes.merge(record.changes.transform_values(&:first))
     end
 
     def reposition_to_front(record)

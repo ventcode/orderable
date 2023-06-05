@@ -35,9 +35,3 @@ class CustomScopeNameModel < ActiveRecord::Base
 
   orderable :position, scope_name: :ordered_by_orderable
 end
-
-class AscOrderModel < ActiveRecord::Base
-  self.table_name = "basic_models"
-
-  orderable :position, order: :asc
-end

@@ -9,7 +9,6 @@ FactoryBot.define do
     factory :no_validation_model, class: NoValidationModel
     factory :no_default_push_front_model, class: NoDefaultPushFrontModel
     factory :custom_scope_name_model, class: CustomScopeNameModel
-    factory :asc_order_model, class: AscOrderModel
   end
 
   factory :model_with_one_scope, class: ModelWithOneScope do
