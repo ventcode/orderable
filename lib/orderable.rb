@@ -4,6 +4,7 @@ require "active_record"
 
 require_relative "orderable/version"
 require_relative "orderable/model_extension"
+require_relative "orderable/config"
 require_relative "orderable/executor"
 require_relative "orderable/errors"
 
