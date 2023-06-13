@@ -27,7 +27,7 @@ end
 class NoDefaultPushFrontModel < ActiveRecord::Base
   self.table_name = "basic_models"
 
-  orderable :position, default_push_front: false
+  orderable :position, auto_set: false
 end
 
 class CustomScopeNameModel < ActiveRecord::Base

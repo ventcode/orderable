@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-RSpec.describe "Function :reset" do
+RSpec.describe "Function :reorder" do
   context "with unsupported adapter" do
     before { allow(ModelWithManyScopes.connection).to receive(:adapter_name).and_return("SQLite3") }
 
     it "should throw an exception if the adapter is not supported" do
-      expect { ModelWithManyScopes.reset_position }.to raise_error(Orderable::AdapterError)
+      expect { ModelWithManyScopes.reorder }.to raise_error(Orderable::AdapterError)
     end
   end
 
@@ -18,7 +18,7 @@ RSpec.describe "Function :reset" do
     let(:alpha_positions) { ModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position) }
     let(:beta_positions) { ModelWithManyScopes.ordered.where(kind: "beta").pluck(:position) }
 
-    before { ModelWithManyScopes.reset_position }
+    before { ModelWithManyScopes.reorder }
 
     it "reset the positions and keeps the sequential order" do
       expect(alpha_positions).to eq((0..2).to_a.reverse)

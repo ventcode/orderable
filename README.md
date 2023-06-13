@@ -103,7 +103,7 @@ orderable :orderable_field_name
 | - | - | - | - |
 | `scope` | array of symbols | `[]` | scope same as in unique index (uniqueness of this fields combination would be ensured) |
 | `validate` | boolean | `true` | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
-| `default_push_front` | boolean | `true` | if `true`, it sets a new record in front of other records unless position field is passed directly |
+| `auto_set` | boolean | `true` | if `true`, it sets a new record in front of other records unless position field is passed directly |
 |`scope_name`| symbol | `ordered` | based on this property additional scope is added to AR model |
 
 ### Usage Examples
@@ -139,11 +139,11 @@ Image.ordered.pluck(:name, :position, :group) # => [["C", 2, "G_1"], ["B", 1, "G
 
 ```ruby
 class Image < ActiveRecord::Base
-  orderable :position, default_push_front: true # by default
+  orderable :position, auto_set: true # by default
 end
 
 class Post < ActiveRecord::Base
-  orderable :position, default_push_front: false
+  orderable :position, auto_set: false
 end
 
 image= Image.create(name: "A") # => OK

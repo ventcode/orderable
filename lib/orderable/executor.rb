@@ -5,17 +5,17 @@ module Orderable
     SEQUENCE_NAME = "orderable"
     INITIAL_POSITIONING_FIELD_VALUE = 0
 
-    attr_reader :model, :field, :scope, :default_push_front
+    attr_reader :model, :field, :scope, :auto_set
 
-    def initialize(model, field, scope, **config)
+    def initialize(model:, config:)
       @model = model
-      @field = field.to_s
-      @scope = scope.is_a?(Array) ? scope : [scope]
-      @default_push_front = config[:default_push_front]
+      @field = config.field.to_s
+      @scope = config.scope.is_a?(Array) ? config.scope : [config.scope]
+      @auto_set = config.auto_set
     end
 
     def on_create(record)
-      return reposition_to_front(record) if default_push_front && record[field].nil?
+      return reposition_to_front(record) if auto_set && record[field].nil?
 
       records = affected_records(record, above: record[field])
       push(records)
@@ -38,7 +38,7 @@ module Orderable
     end
 
     def validate_less_than_or_equal_to(record)
-      return if default_push_front && record[field].nil?
+      return if auto_set && record[field].nil?
 
       max_value = affected_records(record).count
       return if max_value.zero?
@@ -82,7 +82,7 @@ module Orderable
 
     def push_to_another_scope(record)
       adjust_in_previous_scope(record)
-      return reposition_to_front(record) if default_push_front && record.changes[field]&.second.nil?
+      return reposition_to_front(record) if auto_set && record.changes[field]&.second.nil?
 
       adjust_in_current_scope(record)
     end

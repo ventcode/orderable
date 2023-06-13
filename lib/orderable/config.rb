@@ -14,7 +14,7 @@ module Orderable
     }.freeze
 
     def initialize(**options)
-      super(options.merge(DEFAULTS))
+      super(DEFAULTS.merge(options))
     end
   end
 end

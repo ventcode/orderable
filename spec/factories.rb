@@ -7,7 +7,7 @@ FactoryBot.define do
     sequence(:name, "a")
 
     factory :no_validation_model, class: NoValidationModel
-    factory :no_default_push_front_model, class: NoDefaultPushFrontModel
+    factory :no_auto_set_model, class: NoDefaultPushFrontModel
     factory :custom_scope_name_model, class: CustomScopeNameModel
   end
 
