@@ -5,14 +5,14 @@ require_relative "lib/orderable/version"
 Gem::Specification.new do |spec|
   spec.name          = "orderable"
   spec.version       = Orderable::VERSION
-  spec.authors       = ["Piotr Kruczek"]
-  spec.email         = ["piotr.kruczek@ventcode.com"]
+  spec.authors       = ["Ventcode"]
+  spec.email         = ["hello@ventcode.com"]
 
   spec.summary       = "Orderable summary"
   # spec.description   = "TODO: Write a longer description or delete this line."
   spec.homepage      = "https://ventcode.com"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 3.0.1")
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.5.7")
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
 
@@ -29,15 +29,15 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activerecord", ">= 6.0"
-  spec.add_dependency "rake", "~> 13.0"
+  spec.add_dependency "activerecord", ">= 5.0.0"
+  spec.add_dependency "rake", ">= 10.0"
   spec.add_development_dependency "ammeter", "~> 1.1.5"
   spec.add_development_dependency "byebug", "~> 11.1.3"
-  spec.add_development_dependency "database_cleaner-active_record", "~> 2.0", ">= 2.0.1"
-  spec.add_development_dependency "factory_bot_rails", "~> 6.2"
-  spec.add_development_dependency "pg", "~> 1.4.3"
+  spec.add_development_dependency "database_cleaner-active_record", "~> 1.99.0"
+  spec.add_development_dependency "factory_bot_rails", "~> 4.2"
+  spec.add_development_dependency "pg", "~> 1.1"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 0.80"
-  spec.add_development_dependency "shoulda-matchers", "~> 5.1.0"
-  spec.add_development_dependency "standalone_migrations", "~> 6.1"
+  spec.add_development_dependency "shoulda-matchers", "~> 4.1.0"
+  spec.add_development_dependency "standalone_migrations", "~> 7.1.1"
 end

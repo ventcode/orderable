@@ -1,3 +1,10 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.8 (Homebrew)
+-- Dumped by pg_dump version 14.8 (Homebrew)
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -12,18 +19,6 @@ SET row_security = off;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
-
---
--- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.ar_internal_metadata (
-    key character varying NOT NULL,
-    value character varying,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
 
 --
 -- Name: basic_models; Type: TABLE; Schema: public; Owner: -
@@ -152,14 +147,6 @@ ALTER TABLE ONLY public.model_with_one_scopes ALTER COLUMN id SET DEFAULT nextva
 
 
 --
--- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ar_internal_metadata
-    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
-
-
---
 -- Name: basic_models basic_models_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -208,11 +195,10 @@ ALTER TABLE ONLY public.model_with_one_scopes
 
 
 --
--- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.schema_migrations
-    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING btree (version);
 
 
 --
@@ -221,12 +207,15 @@ ALTER TABLE ONLY public.schema_migrations
 
 SET search_path TO "$user", public;
 
-INSERT INTO "schema_migrations" (version) VALUES
-('20220727164055'),
-('20220819131546'),
-('20220905093935'),
-('20220905094043'),
-('20220905094138'),
-('20220905094233');
+INSERT INTO schema_migrations (version) VALUES ('20220727164055');
 
+INSERT INTO schema_migrations (version) VALUES ('20220819131546');
+
+INSERT INTO schema_migrations (version) VALUES ('20220905093935');
+
+INSERT INTO schema_migrations (version) VALUES ('20220905094043');
+
+INSERT INTO schema_migrations (version) VALUES ('20220905094138');
+
+INSERT INTO schema_migrations (version) VALUES ('20220905094233');
 
