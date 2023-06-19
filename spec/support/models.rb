@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+class DefaultModel < ActiveRecord::Base
+  self.table_name = "basic_models"
+end
+
 class BasicModel < ActiveRecord::Base
   orderable :position
 end

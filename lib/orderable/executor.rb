@@ -3,12 +3,12 @@
 module Orderable
   class Executor
     SEQUENCE_NAME = "orderable"
-    INITIAL_POSITIONING_FIELD_VALUE = 0
 
-    attr_reader :model, :field, :scope, :auto_set
+    attr_reader :model, :field, :scope, :auto_set, :from
 
     def initialize(model:, config:)
       @model = model
+      @from = config.from
       @field = config.field.to_s
       @scope = config.scope.is_a?(Array) ? config.scope : [config.scope]
       @auto_set = config.auto_set
@@ -37,13 +37,14 @@ module Orderable
       push(records, by: -1)
     end
 
-    def validate_less_than_or_equal_to(record)
+    def validate_less_than_or_equal_to(record) # rubocop:disable Metrics/AbcSize
       return if auto_set && record[field].nil?
 
-      max_value = affected_records(record).count
-      return if max_value.zero?
+      affected_records = affected_records(record)
+      return if affected_records.size.zero?
 
-      max_value -= 1 unless record.new_record?
+      max_value = affected_records.maximum(field)
+      max_value += 1 unless record.persisted?
       return if record[field] && record[field] <= max_value
 
       record.errors.add(field, :less_than_or_equal_to, count: max_value)
@@ -104,7 +105,7 @@ module Orderable
 
     def reposition_to_front(record)
       max_value = model.where(scope_query(record)).maximum(field)
-      return record[field] = INITIAL_POSITIONING_FIELD_VALUE if max_value.nil?
+      return record[field] = from if max_value.nil?
 
       record[field] = max_value + 1
     end
@@ -125,7 +126,7 @@ module Orderable
     def with_sequence(collection)
       return unless block_given?
 
-      model.connection.execute("CREATE TEMP SEQUENCE #{SEQUENCE_NAME} MINVALUE #{INITIAL_POSITIONING_FIELD_VALUE}")
+      model.connection.execute("CREATE TEMP SEQUENCE #{SEQUENCE_NAME} MINVALUE #{from}")
 
       collection.each_with_index do |element, index|
         model.connection.execute("ALTER SEQUENCE #{SEQUENCE_NAME} RESTART") unless index.zero?

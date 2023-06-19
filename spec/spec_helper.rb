@@ -7,8 +7,8 @@ require "database_cleaner/active_record"
 require "shoulda-matchers"
 require "factory_bot_rails"
 require "ammeter/init"
+require_relative "./factories"
 Dir["./support/*.rb"].sort.each { |file| require file }
-Dir["./factories/*.rb"].sort.each { |file| require file }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -53,5 +53,19 @@ Shoulda::Matchers.configure do |config|
     with.test_framework :rspec
     with.library :active_record
     with.library :active_model
+  end
+end
+
+def inject_orderable_context(model, field, **params)
+  before(:all) do
+    model.class_eval do
+      orderable(field, **params)
+    end
+  end
+
+  after(:all) do
+    model.class_eval do
+      singleton_class.undef_method(:orderable)
+    end
   end
 end

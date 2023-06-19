@@ -11,6 +11,10 @@ FactoryBot.define do
     factory :custom_scope_name_model, class: CustomScopeNameModel
   end
 
+  factory :default_model, class: DefaultModel do
+    sequence(:name, "a")
+  end
+
   factory :model_with_one_scope, class: ModelWithOneScope do
     sequence(:name, "a")
     kind { "alpha" }
