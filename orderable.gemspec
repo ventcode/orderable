@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "activerecord", ">= 5.0.0"
   spec.add_runtime_dependency "rake", ">= 10.0"
   spec.add_development_dependency "ammeter", "~> 1.1.5"
+  spec.add_development_dependency "appraisal", "~> 2.0"
   spec.add_development_dependency "byebug", "~> 11.1.3"
   spec.add_development_dependency "database_cleaner-active_record", "~> 1.99.0"
   spec.add_development_dependency "factory_bot_rails", "~> 4.2"
@@ -40,5 +41,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "~> 0.80"
   spec.add_development_dependency "shoulda-matchers", "~> 4.1.0"
   spec.add_development_dependency "standalone_migrations", "~> 7.1.1"
-  spec.add_development_dependency 'appraisal', '~> 2.0'
 end
