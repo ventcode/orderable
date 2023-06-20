@@ -77,7 +77,7 @@ module Orderable
     end
 
     def scope_query(record)
-      scope.index_with { |scope_field| record[scope_field.to_s] }
+      scope.map { |scope_field| [scope_field, record[scope_field.to_s]] }.to_h
     end
 
     def push_to_another_scope(record)

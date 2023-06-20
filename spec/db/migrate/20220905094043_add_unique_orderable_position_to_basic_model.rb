@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddUniqueOrderablePositionToBasicModel < ActiveRecord::Migration[6.1]
+class AddUniqueOrderablePositionToBasicModel < ActiveRecord::Migration[5.0]
   def up
     add_column :basic_models, :position, :integer
 

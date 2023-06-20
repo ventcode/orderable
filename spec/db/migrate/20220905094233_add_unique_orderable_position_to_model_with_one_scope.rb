@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddUniqueOrderablePositionToModelWithOneScope < ActiveRecord::Migration[6.1]
+class AddUniqueOrderablePositionToModelWithOneScope < ActiveRecord::Migration[5.0]
   def up
     add_column :model_with_one_scopes, :position, :integer
 
