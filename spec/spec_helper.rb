@@ -25,16 +25,20 @@ RSpec.configure do |config|
     FactoryBot.reload
   end
 
-  config.before(:suite) do
-    Rake::Task["db:create"].invoke
-    Rake::Task["db:migrate"].invoke
+  unless ENV["SPEC_MANUAL_DATABASE"] == "1"
+    config.before(:suite) do
+      Rake::Task["db:create"].invoke
+      Rake::Task["db:migrate"].invoke
+    end
 
-    DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:truncation)
+    config.after(:suite) do
+      Rake::Task["db:drop"].invoke
+    end
   end
 
-  config.after(:suite) do
-    Rake::Task["db:drop"].invoke
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
   end
 
   config.around(:each) do |example|
