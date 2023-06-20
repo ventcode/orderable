@@ -153,4 +153,4 @@ DEPENDENCIES
   standalone_migrations (~> 7.1.1)
 
 BUNDLED WITH
-   1.17.3
+   2.4.9
