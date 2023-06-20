@@ -1,11 +1,19 @@
 # frozen_string_literal: true
 
-class DefaultModel < ActiveRecord::Base
-  self.table_name = "basic_models"
-end
-
 class BasicModel < ActiveRecord::Base
   orderable :position
+end
+
+class FromModel < ActiveRecord::Base
+  self.table_name = "basic_models"
+
+  orderable :position, from: 100
+end
+
+class DescDirectionModel < ActiveRecord::Base
+  self.table_name = "basic_models"
+
+  orderable :position, direction: :desc, from: 10
 end
 
 class ModelWithOneScope < ActiveRecord::Base
@@ -32,10 +40,4 @@ class NoDefaultPushFrontModel < ActiveRecord::Base
   self.table_name = "basic_models"
 
   orderable :position, auto_set: false
-end
-
-class CustomScopeNameModel < ActiveRecord::Base
-  self.table_name = "basic_models"
-
-  orderable :position, scope_name: :ordered_by_orderable
 end

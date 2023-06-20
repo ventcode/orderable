@@ -1,19 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe "Configuration option :from" do
-  inject_orderable_context DefaultModel, :position, from: 100
-
   before do
-    create_list(:default_model, 2)
+    create_list(:from_model, 2)
   end
 
   context "#on_create" do
-    subject { create(:default_model, **args) }
+    subject { create(:from_model, **args) }
     let(:args) { {} }
 
     it "creates a new record with the highest position" do
-      expect(subject.position).to eq(DefaultModel.maximum(:position))
-      expect(DefaultModel.ordered.pluck(:position)).to eq([102, 101, 100])
+      expect(subject.position).to eq(FromModel.maximum(:position))
+      expect(FromModel.ordered.pluck(:position)).to eq([102, 101, 100])
     end
 
     context "when position attribute given" do
@@ -21,13 +19,13 @@ RSpec.describe "Configuration option :from" do
 
       it "creates a new record with a correct position" do
         expect(subject.position).to eq(101)
-        expect(DefaultModel.ordered.pluck(:position)).to eq([102, 101, 100])
+        expect(FromModel.ordered.pluck(:position)).to eq([102, 101, 100])
       end
     end
   end
 
   context "#on_update" do
-    subject { create(:default_model) }
+    subject { create(:from_model) }
 
     context "updating to higher position" do
       before do
@@ -35,7 +33,7 @@ RSpec.describe "Configuration option :from" do
       end
 
       it "shifts records correctly" do
-        expect(DefaultModel.pluck(:position, :id).to_h).to include(
+        expect(FromModel.pluck(:position, :id).to_h).to include(
           {
             100 => a_kind_of(Integer),
             101 => a_kind_of(Integer),
@@ -54,12 +52,12 @@ RSpec.describe "Configuration option :from" do
   end
 
   context "#on_destroy" do
-    subject { create(:default_model, position: 101) }
+    subject { create(:from_model, position: 101) }
 
     it "removes the record and shifts others correctly" do
       expect(subject.destroy).to be_present
       expect { subject.reload }.to raise_error(ActiveRecord::RecordNotFound)
-      expect(DefaultModel.ordered.pluck(:position)).to eq([101, 100])
+      expect(FromModel.ordered.pluck(:position)).to eq([101, 100])
     end
   end
 end

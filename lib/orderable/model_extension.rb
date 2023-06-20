@@ -16,10 +16,15 @@ module Orderable
         if config.validate
           validates field, presence: true, on: :update
           validates field, presence: true, on: :create unless config.auto_set
-          validates field, numericality: {
-            only_integer: true,
-            greater_than_or_equal_to: config.from
-          }, allow_nil: true
+          validates field, allow_nil: true, numericality: {
+            only_integer: true
+          }.merge!(
+            if config.direction == :asc
+              { greater_than_or_equal_to: config.from }
+            else
+              { less_than_or_equal_to: config.from }
+            end
+          )
 
           validate { executor.validate_less_than_or_equal_to(self) }
         end

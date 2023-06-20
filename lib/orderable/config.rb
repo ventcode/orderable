@@ -9,7 +9,7 @@ module Orderable
       scope: [],
       validate: true,
       from: 0,
-      step: 1,
+      direction: :asc,
       auto_set: true # find better name?
     }.freeze
 

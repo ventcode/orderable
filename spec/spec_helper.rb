@@ -55,17 +55,3 @@ Shoulda::Matchers.configure do |config|
     with.library :active_model
   end
 end
-
-def inject_orderable_context(model, field, **params)
-  before(:all) do
-    model.class_eval do
-      orderable(field, **params)
-    end
-  end
-
-  after(:all) do
-    model.class_eval do
-      singleton_class.undef_method(:orderable)
-    end
-  end
-end

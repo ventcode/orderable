@@ -8,11 +8,8 @@ FactoryBot.define do
 
     factory :no_validation_model, class: NoValidationModel
     factory :no_auto_set_model, class: NoDefaultPushFrontModel
-    factory :custom_scope_name_model, class: CustomScopeNameModel
-  end
-
-  factory :default_model, class: DefaultModel do
-    sequence(:name, "a")
+    factory :from_model, class: FromModel
+    factory :desc_direction_model, class: DescDirectionModel
   end
 
   factory :model_with_one_scope, class: ModelWithOneScope do

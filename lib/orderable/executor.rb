@@ -1,10 +1,21 @@
 # frozen_string_literal: true
 
 module Orderable
-  class Executor
+  class Executor # rubocop:disable Metrics/ClassLength
     SEQUENCE_NAME = "orderable"
+    DIRECTION_EXTREMA = {
+      asc: {
+        type: :maximum,
+        step: 1
+      },
+      desc: {
+        type: :minimum,
+        step: -1
+      }
+    }.freeze
+    private_constant :DIRECTION_EXTREMA
 
-    attr_reader :model, :field, :scope, :auto_set, :from
+    attr_reader :model, :field, :scope, :auto_set, :from, :direction
 
     def initialize(model:, config:)
       @model = model
@@ -12,12 +23,18 @@ module Orderable
       @field = config.field.to_s
       @scope = config.scope.is_a?(Array) ? config.scope : [config.scope]
       @auto_set = config.auto_set
+      @direction = config.direction
     end
 
     def on_create(record)
-      return reposition_to_front(record) if auto_set && record[field].nil?
+      return push_front(record) if auto_set && record[field].nil?
 
-      records = affected_records(record, above: record[field])
+      records = if direction == :asc
+                  affected_records(record, above: record[field])
+                else
+                  affected_records(record, below: record[field])
+                end
+
       push(records)
     end
 
@@ -33,21 +50,28 @@ module Orderable
     end
 
     def on_destroy(record)
-      records = affected_records(record, above: record[field])
-      push(records, by: -1)
+      records = if direction == :asc
+                  affected_records(record, above: record[field])
+                else
+                  affected_records(record, below: record[field])
+                end
+
+      push(records, by: -DIRECTION_EXTREMA.fetch(direction, :asc)[:step])
     end
 
-    def validate_less_than_or_equal_to(record) # rubocop:disable Metrics/AbcSize
+    def validate_less_than_or_equal_to(record) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       return if auto_set && record[field].nil?
 
       affected_records = affected_records(record)
       return if affected_records.size.zero?
 
-      max_value = affected_records.maximum(field)
-      max_value += 1 unless record.persisted?
-      return if record[field] && record[field] <= max_value
+      extremum = DIRECTION_EXTREMA.fetch(direction, :asc)
+      extreme_value = affected_records.send(extremum[:type], field)
+      extreme_value += extremum[:step] unless record.persisted?
+      return if record[field] && extremum[:type] == :maximum && record[field] <= extreme_value
+      return if record[field] && extremum[:type] == :minimum && record[field] >= extreme_value
 
-      record.errors.add(field, :less_than_or_equal_to, count: max_value)
+      record.errors.add(field, :less_than_or_equal_to, count: extreme_value)
     end
 
     def reset
@@ -83,7 +107,7 @@ module Orderable
 
     def push_to_another_scope(record)
       adjust_in_previous_scope(record)
-      return reposition_to_front(record) if auto_set && record.changes[field]&.second.nil?
+      return push_front(record) if auto_set && record.changes[field]&.second.nil?
 
       adjust_in_current_scope(record)
     end
@@ -103,14 +127,16 @@ module Orderable
       record.attributes.merge(record.changes.transform_values(&:first))
     end
 
-    def reposition_to_front(record)
-      max_value = model.where(scope_query(record)).maximum(field)
-      return record[field] = from if max_value.nil?
+    def push_front(record)
+      scope = model.where(scope_query(record))
+      extremum = DIRECTION_EXTREMA.fetch(direction, :asc)
+      extreme_value = scope.send(extremum[:type], field)
+      return record[field] = from if extreme_value.nil?
 
-      record[field] = max_value + 1
+      record[field] = extreme_value + extremum[:step]
     end
 
-    def push(records, by: 1)
+    def push(records, by: DIRECTION_EXTREMA.fetch(direction, :asc)[:step])
       records.update_all("#{field} = #{field} + #{by}")
     end
 
