@@ -23,9 +23,3 @@ end
 appraise "activerecord_7.0.0" do
   gem "activerecord", "~> 7.0.0", require: "active_record"
 end
-
-appraise "activerecord_main" do
-  git "https://github.com/rails/rails", branch: "main" do
-    gem "activerecord", require: "active_record"
-  end
-end
