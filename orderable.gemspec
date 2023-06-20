@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = "Orderable makes it easy to custom order model in ActiveRecord + PostgreSQL app"
   spec.homepage      = "https://ventcode.com"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.5.7")
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.5.0")
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
@@ -29,8 +29,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activerecord", ">= 5.0.0"
-  spec.add_dependency "rake", ">= 10.0"
+  spec.add_runtime_dependency "activerecord", ">= 5.0.0"
+  spec.add_runtime_dependency "rake", ">= 10.0"
   spec.add_development_dependency "ammeter", "~> 1.1.5"
   spec.add_development_dependency "byebug", "~> 11.1.3"
   spec.add_development_dependency "database_cleaner-active_record", "~> 1.99.0"
@@ -40,4 +40,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "~> 0.80"
   spec.add_development_dependency "shoulda-matchers", "~> 4.1.0"
   spec.add_development_dependency "standalone_migrations", "~> 7.1.1"
+  spec.add_development_dependency 'appraisal', '~> 2.0'
 end
