@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Orderable
-  class Executor # rubocop:disable Metrics/ClassLength
+  class Executor
     SEQUENCE_NAME = "orderable"
     DIRECTION_EXTREMA = {
       asc: {
@@ -24,13 +24,15 @@ module Orderable
       @model = model
     end
 
+    # front -  if asc - front <= from, if desc - front >= from
+    # top - if asc - the highers number, if desc - the lowest number
     def on_create(record)
-      return push_front(record) if auto_set && record[field].nil?
+      return set_record_on_top(record) if auto_set && record[field].nil?
 
       records = if direction == :asc
                   affected_records(record, above: record[field])
                 else
-                  affected_records(record, below: record[field])
+                  affected_records(record, below: record[field]) # przeszkadza
                 end
 
       push(records)
@@ -43,7 +45,7 @@ module Orderable
       above, below = record.changes[field].sort
       by = record.changes[field].reduce(&:<=>)
 
-      records = affected_records(record, above: above, below: below)
+      records = affected_records(record, above: above, below: below) # przeszkadza
       push(records, by: by)
     end
 
@@ -70,7 +72,7 @@ module Orderable
       return if record[field] && extremum[:type] == :minimum && record[field] >= extreme_value
 
       record.errors.add(field, :less_than_or_equal_to, count: extreme_value)
-    end
+    end # źle
 
     def reset
       raise(AdapterError, model.connection.adapter_name) if model.connection.adapter_name != "PostgreSQL"
@@ -100,23 +102,28 @@ module Orderable
     end
 
     def scope_query(record)
+      # TODO: Error that scope does not exists
       scope.index_with { |scope_field| record[scope_field.to_s] }
     end
 
     def push_to_another_scope(record)
-      adjust_in_previous_scope(record)
-      return push_front(record) if auto_set && record.changes[field]&.second.nil?
+      model.transaction do # add test for transaction
+        adjust_in_previous_scope(record)
 
-      adjust_in_current_scope(record)
+        if auto_set && record.changes[field]&.second.nil?
+          set_record_on_top(record)
+        else
+          adjust_in_current_scope(record)
+        end
+      end
     end
 
-    def adjust_in_current_scope(record)
+    def adjust_in_current_scope(record) # add test for direction
       records = affected_records(record, above: record[field])
       push(records)
     end
 
-    # TODO: TEST DIRECITON!
-    def adjust_in_previous_scope(record)
+    def adjust_in_previous_scope(record) # add test for direction
       previous_scope_attributes = attributes_before_update(record)
       records = affected_records(previous_scope_attributes, above: previous_scope_attributes[field.to_s])
       push(records, by: -1)
@@ -126,7 +133,7 @@ module Orderable
       record.attributes.merge(record.changes.transform_values(&:first))
     end
 
-    def push_front(record)
+    def set_record_on_top(record)
       records_scope = model.where(scope_query(record))
       extremum = DIRECTION_EXTREMA.fetch(direction, :asc)
       extreme_value = records_scope.send(extremum[:type], field)

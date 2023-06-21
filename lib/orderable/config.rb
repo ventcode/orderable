@@ -9,8 +9,9 @@ module Orderable
       scope: [],
       validate: true,
       from: 0,
+      # sequence: :incremental  || sequence: :decremental
       direction: :asc,
-      auto_set: true # find better name?
+      auto_set: true
     }.freeze
     DIRECTIONS = %i[asc desc].freeze
 
