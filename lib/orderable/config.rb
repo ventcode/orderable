@@ -12,9 +12,20 @@ module Orderable
       direction: :asc,
       auto_set: true # find better name?
     }.freeze
+    DIRECTIONS = %i[asc desc].freeze
 
     def initialize(**options)
-      super(DEFAULTS.merge(options))
+      normalized_options = normalize_options!(options.dup)
+      super(DEFAULTS.merge(normalized_options))
+    end
+
+    private
+
+    def normalize_options!(options)
+      options.tap do |o|
+        o[:scope] = [o[:scope]] if o.key?(:scope) && !o[:scope].is_a?(Array)
+        o[:direction] = :asc if o.key?(:direction) && !o[:direction].in?(DIRECTIONS)
+      end
     end
   end
 end

@@ -15,15 +15,13 @@ module Orderable
     }.freeze
     private_constant :DIRECTION_EXTREMA
 
-    attr_reader :model, :field, :scope, :auto_set, :from, :direction
+    attr_reader :model, :config
+
+    delegate :field, :from, :direction, :auto_set, :scope, to: :config
 
     def initialize(model:, config:)
+      @config = config
       @model = model
-      @from = config.from
-      @field = config.field.to_s
-      @scope = config.scope.is_a?(Array) ? config.scope : [config.scope]
-      @auto_set = config.auto_set
-      @direction = config.direction
     end
 
     def on_create(record)
@@ -85,11 +83,11 @@ module Orderable
     private
 
     def orderable_index_affected?(record)
-      (record.changed.map(&:to_sym) & ([field.to_sym] | scope)).present?
+      (record.changed.map(&:to_sym) & ([field] | scope)).any?
     end
 
     def scope_affected?(record)
-      (scope & record.changed.map(&:to_sym)).present?
+      (scope & record.changed.map(&:to_sym)).any?
     end
 
     def affected_records(record, above: nil, below: nil)
@@ -117,9 +115,10 @@ module Orderable
       push(records)
     end
 
+    # TODO: TEST DIRECITON!
     def adjust_in_previous_scope(record)
       previous_scope_attributes = attributes_before_update(record)
-      records = affected_records(previous_scope_attributes, above: previous_scope_attributes[field])
+      records = affected_records(previous_scope_attributes, above: previous_scope_attributes[field.to_s])
       push(records, by: -1)
     end
 
@@ -128,9 +127,9 @@ module Orderable
     end
 
     def push_front(record)
-      scope = model.where(scope_query(record))
+      records_scope = model.where(scope_query(record))
       extremum = DIRECTION_EXTREMA.fetch(direction, :asc)
-      extreme_value = scope.send(extremum[:type], field)
+      extreme_value = records_scope.send(extremum[:type], field)
       return record[field] = from if extreme_value.nil?
 
       record[field] = extreme_value + extremum[:step]
