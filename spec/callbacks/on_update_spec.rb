@@ -213,6 +213,116 @@ RSpec.describe "on #update" do
     end
   end
 
+  context "model with many scopes - considering descending sequence" do
+    before do
+      create_list(:desc_model_with_many_scopes, 3, group: "first")
+    end
+
+    context "scope property & position updated" do
+      subject { record.update!(group: "first", position: position) }
+      let!(:record) { create(:desc_model_with_many_scopes, group: "second") }
+      let(:position) { 9 }
+
+      it "sets record position as 9 and decrements position of records below by 1" do
+        expect { subject }
+          .to change { DescModelWithManyScopes.ordered(:asc).pluck(:name, :position, :group) }
+          .from(
+            [
+              ["c", 8, "first"],
+              ["b", 9, "first"],
+              ["a", 10, "first"],
+              ["d", 10, "second"]
+            ]
+          )
+          .to(
+            [
+              ["c", 7, "first"],
+              ["b", 8, "first"],
+              ["d", 9, "first"], # updated record
+              ["a", 10, "first"]
+            ]
+          )
+      end
+
+      context "position value set as the maximum one" do
+        let(:position) { 10 }
+
+        it "sets the record position as the maximum one and increments the position of records above by 1" do
+          expect { subject }
+            .to change { DescModelWithManyScopes.ordered(:asc).pluck(:name, :position, :group) }
+            .from(
+              [
+                ["c", 8, "first"],
+                ["b", 9, "first"],
+                ["a", 10, "first"],
+                ["d", 10, "second"]
+              ]
+            )
+            .to(
+              [
+                ["c", 7, "first"],
+                ["b", 8, "first"],
+                ["a", 9, "first"],
+                ["d", 10, "first"] # updated record
+              ]
+            )
+        end
+      end
+    end
+
+    context "only scope property updated" do
+      subject { record.update!(group: "first") }
+      let!(:record) { create(:desc_model_with_many_scopes, group: "second") }
+
+      it "sets record position as 0 by default and increments position of other records in scope by 1" do
+        expect { subject }
+          .to change { DescModelWithManyScopes.ordered(:asc).pluck(:name, :position, :group) }
+          .from(
+            [
+              ["c", 8, "first"],
+              ["b", 9, "first"],
+              ["a", 10, "first"],
+              ["d", 10, "second"]
+            ]
+          )
+          .to(
+            [
+              ["d", 7, "first"], # updated record
+              ["c", 8, "first"],
+              ["b", 9, "first"],
+              ["a", 10, "first"]
+            ]
+          )
+      end
+    end
+
+    context "other property updated" do
+      subject { record.update!(name: "new name") }
+      let!(:record) { create(:desc_model_with_many_scopes, group: "first") }
+
+      it "sets record name to new name and change neither position nor scope" do
+        expect { subject }
+          .to change { DescModelWithManyScopes.ordered(:asc).pluck(:name, :position, :group) }
+          .from(
+            [
+              ["d", 7, "first"],
+              ["c", 8, "first"],
+              ["b", 9, "first"],
+              ["a", 10, "first"]
+            ]
+          )
+          .to(
+            [
+              ["new name", 7, "first"],
+              ["c", 8, "first"],
+              ["b", 9, "first"],
+              ["a", 10, "first"]
+            ]
+          )
+      end
+    end
+  end
+
   context "model without validation" do
     subject { record.update(position: position) }
 

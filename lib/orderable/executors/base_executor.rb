@@ -26,7 +26,7 @@ module Orderable
         return push_to_another_scope(record) if scope_affected?(record)
 
         above, below = record.changes[field].sort.then do |res|
-          next res if config.direction == :asc
+          next res if direction == :asc
 
           res.reverse
         end
@@ -71,11 +71,14 @@ module Orderable
         scope.index_with { |scope_field| record[scope_field.to_s] }
       end
 
-      def push_to_another_scope(record)
-        model.transaction do # add test for transaction
+      def push_to_another_scope(record) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        model.transaction do
           adjust_in_previous_scope(record)
 
-          if auto_set && record.changes[field]&.second.nil?
+          if auto_set && record.changes[field]&.second.nil? &&
+             attributes_before_update(record)[field.to_s] != record[field]
+            set_record_on_top(record)
+          elsif auto_set && !record.send("#{field}_came_from_user?")
             set_record_on_top(record)
           else
             adjust_in_current_scope(record)
@@ -83,14 +86,15 @@ module Orderable
         end
       end
 
-      def adjust_in_current_scope(record) # add test for direction
+      def adjust_in_current_scope(record)
         records = affected_records(record, above: record[field])
         push(records)
       end
 
-      def adjust_in_previous_scope(record) # add test for direction
+      def adjust_in_previous_scope(record)
         previous_scope_attributes = attributes_before_update(record)
         records = affected_records(previous_scope_attributes, above: previous_scope_attributes[field.to_s])
+        records = records.where.not(previous_scope_attributes)
         push(records, by: -step)
       end
 

@@ -28,5 +28,7 @@ FactoryBot.define do
       position { rand(10) }
       to_create { |instance| instance.save(validate: false) }
     end
+
+    factory :desc_model_with_many_scopes, class: DescModelWithManyScopes
   end
 end

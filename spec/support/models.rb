@@ -24,6 +24,12 @@ class ModelWithManyScopes < ActiveRecord::Base
   orderable :position, scope: %i[kind group]
 end
 
+class DescModelWithManyScopes < ActiveRecord::Base
+  self.table_name = "model_with_many_scopes"
+
+  orderable :position, scope: %i[kind group], direction: :desc, from: 10
+end
+
 class NoValidationModel < ActiveRecord::Base
   self.table_name = "basic_models"
 
