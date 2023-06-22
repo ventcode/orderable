@@ -17,6 +17,10 @@ module Orderable
         record.errors.add(field, :greater_than_or_equal_to, count: min_position)
       end
 
+      def numericality_validation
+        { only_integer: true, less_than_or_equal_to: from }.freeze
+      end
+
       private
 
       def affected_records(record, above: nil, below: nil)
@@ -30,7 +34,7 @@ module Orderable
 
       def set_record_on_top(record)
         records = model.where(scope_query(record))
-        min_position = records.send(:minimum, field)
+        min_position = records.minimum(field)
         return record[field] = from if min_position.blank?
 
         record[field] = min_position + STEP

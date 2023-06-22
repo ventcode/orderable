@@ -9,10 +9,13 @@ module Orderable
       scope: [],
       validate: true,
       from: 0,
-      direction: :asc,
+      sequence: :incremental,
       auto_set: true
     }.freeze
-    DIRECTIONS = %i[asc desc].freeze
+    SEQUENCES = {
+      incremental: :desc,
+      decremental: :asc
+    }.freeze
 
     def initialize(**options)
       normalized_options = normalize_options!(options.dup)
@@ -20,7 +23,7 @@ module Orderable
     end
 
     def order_direction
-      DIRECTIONS.detect { |d| d != direction }
+      SEQUENCES.fetch(sequence)
     end
 
     private
@@ -28,7 +31,7 @@ module Orderable
     def normalize_options!(options)
       options.tap do |o|
         o[:scope] = [o[:scope]] if o.key?(:scope) && !o[:scope].is_a?(Array)
-        o[:direction] = :asc if o.key?(:direction) && !o[:direction].in?(DIRECTIONS)
+        o.delete(:sequence) if o.key?(:sequence) && !SEQUENCES.key?(o[:sequence])
       end
     end
   end

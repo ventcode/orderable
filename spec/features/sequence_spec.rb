@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-RSpec.describe "Configuration option :direction" do
+RSpec.describe "Configuration option :sequence" do
   describe "descending" do
     before do
-      create_list(:desc_direction_model, 3)
+      create_list(:decremental_sequence_model, 3)
     end
 
     context "#on_create" do
-      subject { create(:desc_direction_model, **args) }
+      subject { create(:decremental_sequence_model, **args) }
       let(:args) { {} }
 
       it "creates a new record with the lowest position" do
         expect(subject.position).to eq(7)
-        expect(DescDirectionModel.ordered.pluck(:position))
+        expect(DecrementalSequenceModel.ordered.pluck(:position))
           .to eq([7, 8, 9, 10])
       end
 
@@ -23,7 +23,7 @@ RSpec.describe "Configuration option :direction" do
 
         it "creates a new record with a correct position and shift others" do
           expect(subject.position).to eq(9)
-          expect(DescDirectionModel.ordered.pluck(:position))
+          expect(DecrementalSequenceModel.ordered.pluck(:position))
             .to eq([7, 8, 9, 10])
         end
 
@@ -43,7 +43,7 @@ RSpec.describe "Configuration option :direction" do
     end
 
     context "#on_update" do
-      subject { create(:desc_direction_model) }
+      subject { create(:decremental_sequence_model) }
 
       context "updating to higher position" do
         before do
@@ -52,19 +52,19 @@ RSpec.describe "Configuration option :direction" do
 
         it "shifts records correctly" do
           expect(subject.position).to eq(9)
-          expect(DescDirectionModel.ordered.pluck(:position))
+          expect(DecrementalSequenceModel.ordered.pluck(:position))
             .to eq([7, 8, 9, 10])
         end
       end
     end
 
     context "#on_destroy" do
-      subject { create(:desc_direction_model, position: 8) }
+      subject { create(:decremental_sequence_model, position: 8) }
 
       it "removes the record and shifts others correctly" do
         expect(subject.destroy).to be_present
         expect { subject.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect(DescDirectionModel.ordered.pluck(:position))
+        expect(DecrementalSequenceModel.ordered.pluck(:position))
           .to eq([8, 9, 10])
       end
     end

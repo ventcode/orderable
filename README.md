@@ -19,7 +19,7 @@ A gem that makes it easy to change the default order of PostgreSQL database rows
   * [Auto set](#auto-set)
   * [Disabling validation](#disabling-validation)
   * [Setting from value](#setting-from-value)
-  * [Descending direction](#descending-direction)
+  * [Decremental sequence](#decremental-sequence)
 * [License](#license)
 ### Basic usage
 Let's consider the AR **image** model that implements the `orderable` method. Its position field name is set as `position` and it has only 2 properties - `id` and `name`. **Images** table content is presented below.
@@ -106,7 +106,7 @@ orderable :orderable_field_name
 | `validate` | boolean | `true` | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
 | `auto_set` | boolean | `true` | if `true`, it sets a new record in front of other records unless position field is passed directly |
 |`from`| integer | 0 | base value from which positions are set |
-| `direction` | `:asc` or `:desc` | `:asc` | value used to determine positioning direction |
+| `sequence` | `:incremental` or `:decremental` | `:incremental` | value used to determine positioning sequence |
 
 ### Usage Examples
 
@@ -186,11 +186,11 @@ Image.create(name: "B")
 Image.ordered.pluck(:name, :position) # => [["B", 11], ["A", 10]]
 ```
 
-### Descending direction
+### Decremental sequence
 
 ```ruby
 class Image < ActiveRecord::Base
-  orderable :position, from: 10, direction: :desc
+  orderable :position, from: 10, sequence: :decremental
 end
 
 Image.create(name: "A")

@@ -10,10 +10,10 @@ class FromModel < ActiveRecord::Base
   orderable :position, from: 100
 end
 
-class DescDirectionModel < ActiveRecord::Base
+class DecrementalSequenceModel < ActiveRecord::Base
   self.table_name = "basic_models"
 
-  orderable :position, direction: :desc, from: 10
+  orderable :position, sequence: :decremental, from: 10
 end
 
 class ModelWithOneScope < ActiveRecord::Base
@@ -24,10 +24,10 @@ class ModelWithManyScopes < ActiveRecord::Base
   orderable :position, scope: %i[kind group]
 end
 
-class DescModelWithManyScopes < ActiveRecord::Base
+class DecrementalSequenceModelWithManyScopes < ActiveRecord::Base
   self.table_name = "model_with_many_scopes"
 
-  orderable :position, scope: %i[kind group], direction: :desc, from: 10
+  orderable :position, scope: %i[kind group], sequence: :decremental, from: 10
 end
 
 class NoValidationModel < ActiveRecord::Base

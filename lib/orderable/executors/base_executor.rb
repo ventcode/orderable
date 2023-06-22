@@ -7,7 +7,7 @@ module Orderable
 
       attr_reader :model, :config
 
-      delegate :field, :from, :direction, :auto_set, :scope, to: :config
+      delegate :field, :from, :sequence, :auto_set, :scope, to: :config
 
       def initialize(model:, config:)
         @config = config
@@ -38,6 +38,10 @@ module Orderable
       end
 
       def validate_record_position
+        raise NotImplementedError
+      end
+
+      def numericality_validation
         raise NotImplementedError
       end
 

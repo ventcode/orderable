@@ -9,7 +9,7 @@ FactoryBot.define do
     factory :no_validation_model, class: NoValidationModel
     factory :no_auto_set_model, class: NoDefaultPushFrontModel
     factory :from_model, class: FromModel
-    factory :desc_direction_model, class: DescDirectionModel
+    factory :decremental_sequence_model, class: DecrementalSequenceModel
   end
 
   factory :model_with_one_scope, class: ModelWithOneScope do
@@ -29,6 +29,6 @@ FactoryBot.define do
       to_create { |instance| instance.save(validate: false) }
     end
 
-    factory :desc_model_with_many_scopes, class: DescModelWithManyScopes
+    factory :decremental_sequence_model_with_many_scopes, class: DecrementalSequenceModelWithManyScopes
   end
 end

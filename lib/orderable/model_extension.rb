@@ -5,7 +5,7 @@ module Orderable
     def orderable(field, **options) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       config = Config.new(field: field, **options)
 
-      executor = if config.direction == :asc
+      executor = if config.sequence == :incremental
                    Executors::Incremental.new(model: self, config: config)
                  else
                    Executors::Decremental.new(model: self, config: config)
@@ -21,15 +21,7 @@ module Orderable
         if config.validate
           validates field, presence: true, on: :update
           validates field, presence: true, on: :create unless config.auto_set
-          validates field, allow_nil: true, numericality: {
-            only_integer: true
-          }.merge!(
-            if config.direction == :asc
-              { greater_than_or_equal_to: config.from }
-            else
-              { less_than_or_equal_to: config.from }
-            end
-          )
+          validates field, allow_nil: true, numericality: executor.numericality_validation
 
           validate { executor.validate_record_position(self) }
         end
