@@ -71,18 +71,16 @@ module Orderable
         scope.map { |scope_field| [scope_field, record[scope_field.to_s]] }.to_h
       end
 
-      def push_to_another_scope(record) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-        model.transaction do
-          adjust_in_previous_scope(record)
+      def push_to_another_scope(record) # rubocop:disable Metrics/AbcSize
+        adjust_in_previous_scope(record)
 
-          if auto_set && record.changes[field]&.second.nil? &&
-             attributes_before_update(record)[field.to_s] != record[field]
-            set_record_on_top(record)
-          elsif auto_set && !record.send("#{field}_came_from_user?")
-            set_record_on_top(record)
-          else
-            adjust_in_current_scope(record)
-          end
+        if auto_set && record.changes[field]&.second.nil? &&
+           attributes_before_update(record)[field.to_s] != record[field]
+          set_record_on_top(record)
+        elsif auto_set && !record.send("#{field}_came_from_user?")
+          set_record_on_top(record)
+        else
+          adjust_in_current_scope(record)
         end
       end
 

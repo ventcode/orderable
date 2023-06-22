@@ -244,6 +244,32 @@ RSpec.describe "on #update" do
           )
       end
 
+      context "when error while mobing record from given scope to another" do
+        before do
+          create(:decremental_sequence_model_with_many_scopes, group: "second")
+          allow_any_instance_of(Orderable::Executors::Decremental)
+            .to receive(:adjust_in_current_scope).and_raise(StandardError)
+        end
+
+        let!(:expected_result) do
+          [
+            ["c", 8, "first"],
+            ["b", 9, "first"],
+            ["e", 9, "second"],
+            ["a", 10, "first"],
+            ["d", 10, "second"]
+          ]
+        end
+
+        it "restores positions in previouse scope" do
+          expect(DecrementalSequenceModelWithManyScopes.ordered.pluck(:name, :position, :group))
+            .to eq(expected_result)
+          expect { subject }.to raise_error(StandardError)
+          expect(DecrementalSequenceModelWithManyScopes.ordered.pluck(:name, :position, :group))
+            .to eq(expected_result)
+        end
+      end
+
       context "position value set as the maximum one" do
         let(:position) { 10 }
 
