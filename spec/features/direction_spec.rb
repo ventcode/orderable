@@ -13,7 +13,7 @@ RSpec.describe "Configuration option :direction" do
       it "creates a new record with the lowest position" do
         expect(subject.position).to eq(7)
         expect(DescDirectionModel.ordered.pluck(:position))
-          .to match_array([10, 9, 8, 7])
+          .to eq([7, 8, 9, 10])
       end
 
       context "when position attribute given" do
@@ -24,7 +24,7 @@ RSpec.describe "Configuration option :direction" do
         it "creates a new record with a correct position and shift others" do
           expect(subject.position).to eq(9)
           expect(DescDirectionModel.ordered.pluck(:position))
-            .to match_array([10, 9, 8, 7])
+            .to eq([7, 8, 9, 10])
         end
 
         context "position greater than from" do
@@ -53,7 +53,7 @@ RSpec.describe "Configuration option :direction" do
         it "shifts records correctly" do
           expect(subject.position).to eq(9)
           expect(DescDirectionModel.ordered.pluck(:position))
-            .to match_array([10, 9, 8, 7])
+            .to eq([7, 8, 9, 10])
         end
       end
     end
@@ -65,7 +65,7 @@ RSpec.describe "Configuration option :direction" do
         expect(subject.destroy).to be_present
         expect { subject.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect(DescDirectionModel.ordered.pluck(:position))
-          .to match_array([10, 9, 8])
+          .to eq([8, 9, 10])
       end
     end
   end
