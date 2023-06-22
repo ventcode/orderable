@@ -4,7 +4,12 @@ module Orderable
   module ModelExtension
     def orderable(field, **options) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       config = Config.new(field: field, **options)
-      executor = Executor.new(model: self, config: config)
+
+      executor = if config.direction == :asc
+                   Executors::Incremental.new(model: self, config: config)
+                 else
+                   Executors::Decremental.new(model: self, config: config)
+                 end
 
       class_eval do
         before_create { executor.on_create(self) }
@@ -16,15 +21,20 @@ module Orderable
         if config.validate
           validates field, presence: true, on: :update
           validates field, presence: true, on: :create unless config.auto_set
-          validates field, numericality: {
-            only_integer: true,
-            greater_than_or_equal_to: config.from
-          }, allow_nil: true
+          validates field, allow_nil: true, numericality: {
+            only_integer: true
+          }.merge!(
+            if config.direction == :asc
+              { greater_than_or_equal_to: config.from }
+            else
+              { less_than_or_equal_to: config.from }
+            end
+          )
 
-          validate { executor.validate_less_than_or_equal_to(self) }
+          validate { executor.validate_record_position(self) }
         end
 
-        scope :ordered, ->(direction = :desc) { order(field => direction) }
+        scope :ordered, ->(direction = config.order_direction) { order(field => direction) }
         define_singleton_method(:reorder) { executor.reset }
       end
     end

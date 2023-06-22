@@ -9,12 +9,27 @@ module Orderable
       scope: [],
       validate: true,
       from: 0,
-      step: 1,
-      auto_set: true # find better name?
+      direction: :asc,
+      auto_set: true
     }.freeze
+    DIRECTIONS = %i[asc desc].freeze
 
     def initialize(**options)
-      super(DEFAULTS.merge(options))
+      normalized_options = normalize_options!(options.dup)
+      super(DEFAULTS.merge(normalized_options))
+    end
+
+    def order_direction
+      DIRECTIONS.detect { |d| d != direction }
+    end
+
+    private
+
+    def normalize_options!(options)
+      options.tap do |o|
+        o[:scope] = [o[:scope]] if o.key?(:scope) && !o[:scope].is_a?(Array)
+        o[:direction] = :asc if o.key?(:direction) && !o[:direction].in?(DIRECTIONS)
+      end
     end
   end
 end

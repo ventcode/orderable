@@ -8,7 +8,8 @@ FactoryBot.define do
 
     factory :no_validation_model, class: NoValidationModel
     factory :no_auto_set_model, class: NoDefaultPushFrontModel
-    factory :custom_scope_name_model, class: CustomScopeNameModel
+    factory :from_model, class: FromModel
+    factory :desc_direction_model, class: DescDirectionModel
   end
 
   factory :model_with_one_scope, class: ModelWithOneScope do
@@ -27,5 +28,7 @@ FactoryBot.define do
       position { rand(10) }
       to_create { |instance| instance.save(validate: false) }
     end
+
+    factory :desc_model_with_many_scopes, class: DescModelWithManyScopes
   end
 end
