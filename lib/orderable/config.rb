@@ -9,7 +9,6 @@ module Orderable
       scope: [],
       validate: true,
       from: 0,
-      # sequence: :incremental  || sequence: :decremental
       direction: :asc,
       auto_set: true
     }.freeze
@@ -18,6 +17,10 @@ module Orderable
     def initialize(**options)
       normalized_options = normalize_options!(options.dup)
       super(DEFAULTS.merge(normalized_options))
+    end
+
+    def order_direction
+      DIRECTIONS.detect { |d| d != direction }
     end
 
     private

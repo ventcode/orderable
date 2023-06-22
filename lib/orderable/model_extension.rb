@@ -34,7 +34,7 @@ module Orderable
           validate { executor.validate_record_position(self) }
         end
 
-        scope :ordered, ->(direction = :desc) { order(field => direction) }
+        scope :ordered, ->(direction = config.order_direction) { order(field => direction) }
         define_singleton_method(:reorder) { executor.reset }
       end
     end
