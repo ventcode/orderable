@@ -25,11 +25,7 @@ module Orderable
         return unless orderable_index_affected?(record)
         return push_to_another_scope(record) if scope_affected?(record)
 
-        above, below = record.changes[field].sort.then do |res|
-          next res if direction == :asc
-
-          res.reverse
-        end
+        above, below = record.changes[field].sort { |a, b| step * a <=> step * b }
         by = record.changes[field].reduce(&:<=>)
 
         records = affected_records(record, above: above, below: below)
