@@ -22,6 +22,24 @@ jobs:
   test:
     name: Test suite and coverage
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ['2.6', '2.7', '3.0']
+        gemfile: ['gemfiles/activerecord_5.0.2.gemfile',
+        'gemfiles/activerecord_6.0.0.gemfile', 
+        'gemfiles/activerecord_7.0.0.gemfile']
+        exclude:
+          - gemfile: 'gemfiles/activerecord_5.2.2.gemfile'
+            ruby: '3.0' # rails 5.2 can't run on ruby 3.0
+          - gemfile: 'gemfiles/activerecord_5.1.0.gemfile'
+            ruby: '3.0' # rails 5.1 can't run on ruby 3.0
+          - gemfile: 'gemfiles/activerecord_5.0.2.gemfile'
+            ruby: '3.0' # rails 5.0 can't run on ruby 3.0
+          - gemfile: 'gemfiles/activerecord_5.0.2.gemfile'
+            ruby: '3.0' # rails 5.0 can't run on ruby 3.0
+          - gemfile: 'gemfiles/activerecord_7.0.0.gemfile'
+            ruby: '2.6' # rails 7+ requires ruby 3.0+
     services:
       postgres:
         image: postgres:14.7
@@ -38,6 +56,9 @@ jobs:
       RAILS_ENV: test
       POSTGRES_USERNAME: postgres
       POSTGRES_PASSWORD: postgres
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+      SPEC_DISABLE_DROP_DATABASE: 1
+      SCHEMA: structure.sql
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -45,7 +66,8 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      
+
       - name: Run RSpec
         run: bundle exec rspec -fd

@@ -30,7 +30,7 @@ CREATE TABLE public.ar_internal_metadata (
 --
 
 CREATE TABLE public.basic_models (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     name character varying NOT NULL,
     "position" integer
 );
@@ -41,6 +41,7 @@ CREATE TABLE public.basic_models (
 --
 
 CREATE SEQUENCE public.basic_models_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -60,7 +61,7 @@ ALTER SEQUENCE public.basic_models_id_seq OWNED BY public.basic_models.id;
 --
 
 CREATE TABLE public.model_with_many_scopes (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     name character varying NOT NULL,
     kind character varying,
     "group" character varying,
@@ -73,6 +74,7 @@ CREATE TABLE public.model_with_many_scopes (
 --
 
 CREATE SEQUENCE public.model_with_many_scopes_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -92,7 +94,7 @@ ALTER SEQUENCE public.model_with_many_scopes_id_seq OWNED BY public.model_with_m
 --
 
 CREATE TABLE public.model_with_one_scopes (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     name character varying NOT NULL,
     kind character varying,
     "position" integer
@@ -104,6 +106,7 @@ CREATE TABLE public.model_with_one_scopes (
 --
 
 CREATE SEQUENCE public.model_with_one_scopes_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE

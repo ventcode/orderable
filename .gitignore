@@ -13,3 +13,7 @@
 .rspec_status
 
 db/*.sqlite3
+
+# Appraisal trash
+/gemfiles/.bundle
+/gemfiles/*.lock
