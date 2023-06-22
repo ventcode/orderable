@@ -10,7 +10,6 @@ module Orderable
         before_create { executor.on_create(self) }
         before_update { executor.on_update(self) }
         after_destroy { executor.on_destroy(self) }
-        before_destroy { reload }
 
         if config.validate
           validates field, presence: true, on: :update

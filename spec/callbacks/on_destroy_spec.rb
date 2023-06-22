@@ -105,6 +105,19 @@ RSpec.describe "on #destroy" do
       create_list(:model_with_many_scopes, 3, group: "first")
     end
 
+    context "when destroying all records" do
+      before do
+        create_list(:model_with_many_scopes, 5, group: "second")
+      end
+      subject { ModelWithManyScopes.destroy_all }
+
+      it "adjust other records properly" do
+        expect { subject }
+          .to change { ModelWithManyScopes.count }
+          .from(8).to(0)
+      end
+    end
+
     context "when destroying record in other scope" do
       let!(:record) { create(:model_with_many_scopes, position: 0, group: "second") }
 
