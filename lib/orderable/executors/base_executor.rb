@@ -89,8 +89,7 @@ module Orderable
 
       def adjust_in_previous_scope(record)
         previous_scope_attributes = attributes_before_update(record)
-        records = affected_records(previous_scope_attributes, above: previous_scope_attributes[field.to_s])
-        records = records.where.not(previous_scope_attributes)
+        records = affected_records(previous_scope_attributes, above: previous_scope_attributes[field.to_s] + step)
         push(records, by: -step)
       end
 
