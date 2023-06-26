@@ -24,11 +24,12 @@ module Orderable
       push(records)
     end
 
-    def on_update(record) # rubocop:disable Metrics/AbcSize
+    def on_update(record)
       return unless orderable_index_affected?(record)
       return push_to_another_scope(record) if scope_affected?(record)
 
-      above, below = record.changes[field].sort { |a, b| step * a <=> step * b }
+      sorted_changes = record.changes[field].sort
+      above, below = sequence == :incremental ? sorted_changes : sorted_changes.reverse
       by = record.changes[field].reduce(&:<=>)
 
       records = affected_records(record, above: above, below: below)
@@ -40,13 +41,12 @@ module Orderable
       push(records, by: -step)
     end
 
-    def validate_record_position(record) # rubocop:disable Metrics/AbcSize
+    def validate_record_position(record)
       return if auto_set && record[field].nil?
 
-      top_position = affected_records(record).send(extremum, field)
+      top_position = find_top_position(record)
       return if top_position.nil?
 
-      top_position += step unless record.persisted?
       range = [from, top_position].sort
       return if record[field]&.between?(*range)
 
@@ -93,17 +93,19 @@ module Orderable
       scope.map { |scope_field| [scope_field, record[scope_field.to_s]] }.to_h
     end
 
-    def push_to_another_scope(record) # rubocop:disable Metrics/AbcSize
+    def push_to_another_scope(record)
       adjust_in_previous_scope(record)
-
-      if auto_set && record.changes[field]&.second.nil? &&
-         attributes_before_update(record)[field.to_s] != record[field]
-        set_record_on_top(record)
-      elsif auto_set && !record.send("#{field}_came_from_user?")
+      if auto_set && field_not_changed?(record)
         set_record_on_top(record)
       else
         adjust_in_current_scope(record)
       end
+    end
+
+    def field_not_changed?(record)
+      return if record.changes[field]&.second.present?
+
+      !(record.send("#{field}_came_from_user?") && attributes_before_update(record)[field.to_s] == record[field])
     end
 
     def adjust_in_current_scope(record)
@@ -127,6 +129,13 @@ module Orderable
       return record[field] = from if top_position.blank?
 
       record[field] = top_position + step
+    end
+
+    def find_top_position(record)
+      position = affected_records(record).send(extremum, field)
+      return if position.nil?
+
+      record.persisted? ? position : position + step
     end
 
     def push(records, by: step)
