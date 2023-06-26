@@ -63,7 +63,8 @@ module Orderable
       raise(AdapterError, model.connection.adapter_name) if model.connection.adapter_name != "PostgreSQL"
 
       with_sequence(scope_groups) do |scope_group|
-        model.where(scope_group).order(field).update_all("#{field} = nextval('#{SEQUENCE_NAME}')")
+        direction = sequence == :incremental ? :asc : :desc
+        model.where(scope_group).order(field => direction).update_all("#{field} = nextval('#{SEQUENCE_NAME}')")
       end
     end
 
@@ -154,7 +155,7 @@ module Orderable
     def with_sequence(collection)
       return unless block_given?
 
-      model.connection.execute("CREATE TEMP SEQUENCE #{SEQUENCE_NAME} MINVALUE #{from}")
+      model.connection.execute(create_sequence_query)
 
       collection.each_with_index do |element, index|
         model.connection.execute("ALTER SEQUENCE #{SEQUENCE_NAME} RESTART") unless index.zero?
@@ -162,6 +163,11 @@ module Orderable
       end
 
       model.connection.execute("DROP SEQUENCE #{SEQUENCE_NAME}")
+    end
+
+    def create_sequence_query
+      "CREATE TEMP SEQUENCE #{SEQUENCE_NAME} INCREMENT #{step}" \
+      "#{sequence == :incremental ? 'MINVALUE' : 'MAXVALUE'} #{from}"
     end
 
     def step

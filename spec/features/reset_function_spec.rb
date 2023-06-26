@@ -25,4 +25,25 @@ RSpec.describe "Function :reorder" do
       expect(beta_positions).to eq((0..2).to_a.reverse)
     end
   end
+
+  # TODO: Add more explicit tests
+  context "with decremental sequence" do
+    let(:alpha_positions) do
+      DecrementalSequenceModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position)
+    end
+    let(:beta_positions) do
+      DecrementalSequenceModelWithManyScopes.ordered.where(kind: "beta").pluck(:position)
+    end
+
+    before do
+      create_list(:decremental_sequence_model_with_many_scopes, 3, :random_position)
+      create_list(:decremental_sequence_model_with_many_scopes, 3, :random_position, kind: "beta")
+      DecrementalSequenceModelWithManyScopes.reorder
+    end
+
+    it "reset the positions and keeps the sequential order" do
+      expect(alpha_positions).to eq((8..10).to_a)
+      expect(beta_positions).to eq((8..10).to_a)
+    end
+  end
 end
