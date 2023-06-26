@@ -29,6 +29,9 @@ FactoryBot.define do
       to_create { |instance| instance.save(validate: false) }
     end
 
+    factory :no_validation_model_with_many_scopes, class: NoValidationModelWithManyScopes
+    factory :decremental_sequence_no_validation_model_with_many_scopes,
+            class: DecrementalSequenceNoValidationModelWithManyScopes
     factory :decremental_sequence_model_with_many_scopes, class: DecrementalSequenceModelWithManyScopes
   end
 end
