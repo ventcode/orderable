@@ -9,7 +9,7 @@ Layout/LineLength:
 
 Naming/AccessorMethodName:
   Exclude:
-    - lib/orderable/executors/**/*
+    - lib/orderable/executor.rb
 
 Metrics/ClassLength:
   Exclude:

@@ -18,7 +18,7 @@ module Orderable
     }.freeze
 
     def initialize(**options)
-      normalized_options = normalize_options!(options.dup)
+      normalized_options = normalize_options!(options)
       super(DEFAULTS.merge(normalized_options))
     end
 
@@ -29,10 +29,9 @@ module Orderable
     private
 
     def normalize_options!(options)
-      options.tap do |o|
-        o[:scope] = [o[:scope]] if o.key?(:scope) && !o[:scope].is_a?(Array)
-        o.delete(:sequence) if o.key?(:sequence) && !SEQUENCES.key?(o[:sequence])
-      end
+      options[:scope] = [options[:scope]] if options.key?(:scope) && !options[:scope].is_a?(Array)
+      options.delete(:sequence) if options.key?(:sequence) && !SEQUENCES.key?(options[:sequence])
+      options
     end
   end
 end

@@ -247,7 +247,7 @@ RSpec.describe "on #update" do
       context "when error while mobing record from given scope to another" do
         before do
           create(:decremental_sequence_model_with_many_scopes, group: "second")
-          allow_any_instance_of(Orderable::Executors::Decremental)
+          allow_any_instance_of(Orderable::Executor)
             .to receive(:adjust_in_current_scope).and_raise(StandardError)
         end
 

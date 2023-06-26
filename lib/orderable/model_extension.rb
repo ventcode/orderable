@@ -4,7 +4,7 @@ module Orderable
   module ModelExtension
     def orderable(field, **options) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       config = Config.new(field: field, **options)
-      executor = Executors.get(config.sequence).new(model: self, config: config)
+      executor = Executor.new(model: self, config: config)
 
       class_eval do
         before_create { executor.on_create(self) }
