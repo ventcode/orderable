@@ -138,7 +138,6 @@ jobs:
         id: coverage
         run: |
           COVERAGE="$( cat ./coverage/.last_run.json | grep "line" | grep -oE "[0-9]+\.[0-9]+" )"
-          echo $COVERAGE
           echo "##[set-output name=coverage;]${COVERAGE}"
 
   badge:
@@ -155,16 +154,12 @@ jobs:
       #     path: coverage
 
       # Use the output from the `coverage` step
-      - name: Echo output
-        run: |
-          echo ${{ needs.coverage.outputs.coverage }}
-
       - name: Generate the badge SVG image
         uses: emibcn/badge-action@v2.0.2
         id: badge
         with:
           label: 'Coverage'
-          status: 99.3
+          status: ${{ needs.coverage.outputs.coverage }}
           color: ${{
             needs.test.outputs.coverage > 90 && 'green'              ||
             needs.test.outputs.coverage > 80 && 'yellow,green'       ||
