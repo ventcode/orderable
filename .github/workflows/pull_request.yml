@@ -104,6 +104,7 @@ jobs:
     # needs: test
     outputs:
       coverage: ${{ steps.coverage.outputs.coverage }}
+      percentage_coverage: ${{ steps.coverage.outputs.percentage_coverage }}
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -139,6 +140,7 @@ jobs:
         run: |
           COVERAGE="$( cat ./coverage/.last_run.json | grep "line" | grep -oE "[0-9]+\.[0-9]+" )"
           echo "##[set-output name=coverage;]${COVERAGE}"
+          echo "##[set-output name=percentage_coverage;]${COVERAGE}%"
 
   badge:
     name: Generate badge image with test coverage value
@@ -159,16 +161,16 @@ jobs:
         id: badge
         with:
           label: 'Coverage'
-          status: ${{ needs.coverage.outputs.coverage }}
+          status: ${{ needs.coverage.outputs.percentage_coverage }}
           color: ${{
-            needs.test.outputs.coverage > 90 && 'green'              ||
-            needs.test.outputs.coverage > 80 && 'yellow,green'       ||
-            needs.test.outputs.coverage > 70 && 'yellow'             ||
-            needs.test.outputs.coverage > 60 && 'orange,yellow'      ||
-            needs.test.outputs.coverage > 50 && 'orange'             ||
-            needs.test.outputs.coverage > 40 && 'red,orange'         ||
-            needs.test.outputs.coverage > 30 && 'red,red,orange'     ||
-            needs.test.outputs.coverage > 20 && 'red,red,red,orange' ||
+            needs.coverage.outputs.coverage > 90 && 'green'              ||
+            needs.coverage.outputs.coverage > 80 && 'yellow,green'       ||
+            needs.coverage.outputs.coverage > 70 && 'yellow'             ||
+            needs.coverage.outputs.coverage > 60 && 'orange,yellow'      ||
+            needs.coverage.outputs.coverage > 50 && 'orange'             ||
+            needs.coverage.outputs.coverage > 40 && 'red,orange'         ||
+            needs.coverage.outputs.coverage > 30 && 'red,red,orange'     ||
+            needs.coverage.outputs.coverage > 20 && 'red,red,red,orange' ||
             'red' }}
           path: ./test-coverage.svg
 
