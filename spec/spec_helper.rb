@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "simplecov"
 require "byebug"
 require "fixtures"
 require "orderable"
@@ -9,6 +10,10 @@ require "factory_bot_rails"
 require "ammeter/init"
 require_relative "./factories"
 Dir["./support/*.rb"].sort.each { |file| require file }
+
+SimpleCov.start do
+  formatter SimpleCov::Formatter::SimpleFormatter
+end
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -40,6 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 0.80"
   spec.add_development_dependency "shoulda-matchers", "~> 4.1.0"
+  spec.add_development_dependency "simplecov", "~> 0.22.0"
   spec.add_development_dependency "standalone_migrations", "~> 7.1.1"
   spec.metadata["rubygems_mfa_required"] = "true"
 end

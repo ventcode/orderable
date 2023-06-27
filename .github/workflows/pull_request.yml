@@ -20,7 +20,7 @@ jobs:
         run: bundle exec rubocop
 
   test:
-    name: Test suite and coverage
+    name: Test suite
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -71,3 +71,52 @@ jobs:
 
       - name: Run RSpec
         run: bundle exec rspec -fd
+
+  coverage:
+    name: Test suite for coverage
+    needs: test
+    outputs:
+      coverage: ${{ steps.coverage.outputs.coverage }}
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14.7
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      RAILS_ENV: test
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+      SCHEMA: structure.sql
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run RSpec
+        run: bundle exec rspec -fd
+
+      - name: Check code coverage
+        run: |
+          echo "$( cat ./coverage/.last_run.json | egrep "${VALUE}" | grep -oE '\d+\.\d+' )"
+
+      - name: Check code coverage
+      id: coverage
+      env:
+        VALUE: "line"
+      run: |
+        COVERAGE="$( cat ./coverage/.last_run.json | egrep "${VALUE}" | grep -oE '\d+\.\d+' )"
+        echo "##[set-output name=coverage;]${COVERAGE}"
+    
+
