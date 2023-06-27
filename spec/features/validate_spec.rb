@@ -8,7 +8,7 @@ RSpec.describe "Configuration option :validate", :with_validations do
     it { should validate_numericality_of(:position).only_integer.is_greater_than_or_equal_to(0) }
 
     context "when default_push_last option is set to false" do
-      subject { build(:no_default_push_front_model) }
+      subject { build(:no_auto_set_model) }
 
       it { should validate_presence_of(:position) }
     end

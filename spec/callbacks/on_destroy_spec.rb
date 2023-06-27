@@ -98,11 +98,50 @@ RSpec.describe "on #destroy" do
           .from(5).to(0)
       end
     end
+
+    context "when destroying specific records" do
+      subject { BasicModel.where(name: %w[b d]).destroy_all }
+
+      it "adjust other records properly" do
+        expect { subject }
+          .to change { BasicModel.ordered.pluck(:name, :position).to_h }
+          .from(
+            {
+              "e" => 4,
+              "d" => 3,
+              "c" => 2,
+              "b" => 1,
+              "a" => 0
+            }
+          )
+          .to(
+            {
+              "e" => 2,
+              "c" => 1,
+              "a" => 0
+            }
+          )
+      end
+    end
   end
 
   context "model with many scopes" do
     before do
       create_list(:model_with_many_scopes, 3, group: "first")
+    end
+
+    context "when destroying all records" do
+      before do
+        create_list(:model_with_many_scopes, 5, group: "second")
+      end
+
+      subject { ModelWithManyScopes.destroy_all }
+
+      it "adjust other records properly" do
+        expect { subject }
+          .to change { ModelWithManyScopes.count }
+          .from(8).to(0)
+      end
     end
 
     context "when destroying record in other scope" do

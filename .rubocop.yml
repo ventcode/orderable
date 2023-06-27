@@ -7,6 +7,22 @@ Style/Documentation:
 Layout/LineLength:
   Max: 120
 
+Metrics/MethodLength:
+  Exclude:
+    - lib/orderable/model_extension.rb
+  
+Metrics/AbcSize:
+  Exclude:
+    - lib/orderable/model_extension.rb
+
+Naming/AccessorMethodName:
+  Exclude:
+    - lib/orderable/executor.rb
+
+Metrics/ClassLength:
+  Exclude:
+    - lib/orderable/executor.rb
+
 Metrics/BlockLength:
   Exclude:
     - spec/**/*

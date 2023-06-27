@@ -2,38 +2,25 @@
 
 module Orderable
   module ModelExtension
-    def orderable(
-      field, scope: [],
-      validate: true,
-      default_push_front: true,
-      scope_name: :ordered
-    )
-      executor = Executor.new(self, field, scope, default_push_front: default_push_front)
+    def orderable(field, **options)
+      config = Config.new(field: field, **options)
+      executor = Executor.new(model: self, config: config)
 
       class_eval do
-        set_orderable_callbacks(executor)
-        set_orderable_validations(executor) if validate
-        scope scope_name, ->(order_direction = :desc) { order(*scope, field => order_direction) }
+        before_create { executor.on_create(self) }
+        before_update { executor.on_update(self) }
+        after_destroy { executor.on_destroy(self) }
+
+        if config.validate
+          validates field, presence: true, on: :update
+          validates field, presence: true, on: :create unless config.auto_set
+          validates field, allow_nil: true, numericality: executor.numericality_validation
+          validate { executor.validate_record_position(self) }
+        end
+
+        scope :ordered, ->(direction = config.order_direction) { order(field => direction) }
+        define_singleton_method(:reorder) { executor.reset }
       end
-
-      define_singleton_method(:"reset_#{field}") { executor.reset }
     end
-
-    private
-
-    # rubocop:disable Naming/AccessorMethodName
-    def set_orderable_callbacks(executor)
-      before_create { executor.on_create(self) }
-      before_update { executor.on_update(self) }
-      before_destroy { reload }
-      after_destroy { executor.on_destroy(self) }
-    end
-
-    def set_orderable_validations(executor)
-      validates executor.field, presence: true unless executor.default_push_front
-      validates executor.field, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
-      validate { executor.validate_less_than_or_equal_to(self) }
-    end
-    # rubocop:enable Naming/AccessorMethodName
   end
 end

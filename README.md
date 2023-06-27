@@ -15,10 +15,11 @@ A gem that makes it easy to change the default order of PostgreSQL database rows
 * [Generate migration](#generate-migration)
 * [Include orderable in AR model](#include-orderable-in-ar-model)
 * [Usage examples](#usage-examples)
-  * [Model with scope](#model-with-scope)
-  * [Default push front](#default-push-front)
+  * [Model with a scope](#model-with-a-scope)
+  * [Auto set](#auto-set)
   * [Disabling validation](#disabling-validation)
-  * [Custom scope name](#custom-scope-name)
+  * [Setting from value](#setting-from-value)
+  * [Decremental sequence](#decremental-sequence)
 * [License](#license)
 ### Basic usage
 Let's consider the AR **image** model that implements the `orderable` method. Its position field name is set as `position` and it has only 2 properties - `id` and `name`. **Images** table content is presented below.
@@ -103,12 +104,13 @@ orderable :orderable_field_name
 | - | - | - | - |
 | `scope` | array of symbols | `[]` | scope same as in unique index (uniqueness of this fields combination would be ensured) |
 | `validate` | boolean | `true` | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
-| `default_push_front` | boolean | `true` | if `true`, it sets a new record in front of other records unless position field is passed directly |
-|`scope_name`| symbol | `ordered` | based on this property additional scope is added to AR model |
+| `auto_set` | boolean | `true` | if `true`, it sets a new record in front of other records unless position field is passed directly |
+|`from`| integer | 0 | base value from which positions are set |
+| `sequence` | `:incremental` or `:decremental` | `:incremental` | value used to determine positioning sequence |
 
 ### Usage Examples
 
-#### Model with scope
+#### Model with a scope
 
 ```ruby
 class Image < ActiveRecord::Base
@@ -139,11 +141,11 @@ Image.ordered.pluck(:name, :position, :group) # => [["C", 2, "G_1"], ["B", 1, "G
 
 ```ruby
 class Image < ActiveRecord::Base
-  orderable :position, default_push_front: true # by default
+  orderable :position, auto_set: true # by default
 end
 
 class Post < ActiveRecord::Base
-  orderable :position, default_push_front: false
+  orderable :position, auto_set: false
 end
 
 image= Image.create(name: "A") # => OK
@@ -172,16 +174,29 @@ Image.create(name: "A", position: -1)  # => validation error (cannot be negative
 Image.create(name: "A", position: 1) # =>  validation error (no image with position 0)
 Post.create(title: "A title", position: -1) # => OK
 ```
-#### Custom scope name
+#### Setting from value
 
 ```ruby
 class Image < ActiveRecord::Base
-  orderable :position, scope_name: :ordered_by_orderable
+  orderable :position, from: 10
 end
 
-Image.pluck(:name, :position) # => [["A", 0], ["B, 1"]]
-Image.ordered # => no method error (scope does not exist)
-Image.ordered_by_orderable.pluck(:name, :position) # => [["B", 1], ["A", 0]]
+Image.create(name: "A")
+Image.create(name: "B")
+Image.ordered.pluck(:name, :position) # => [["B", 11], ["A", 10]]
+```
+
+### Decremental sequence
+
+```ruby
+class Image < ActiveRecord::Base
+  orderable :position, from: 10, sequence: :decremental
+end
+
+Image.create(name: "A")
+Image.create(name: "B")
+Image.create(name: "C")
+Image.ordered.pluck(:name, :position) # => [["C", 8], ["B", 9], ["A", 10]]
 ```
 
 ## License

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe "Configuration option :default_push_front" do
-  context "when :default_push_front is set to true" do
+RSpec.describe "Configuration option :auto_set" do
+  context "when :auto_set is set to true" do
     subject(:record) { create(:basic_model) }
 
     context "without other records" do
@@ -19,8 +19,8 @@ RSpec.describe "Configuration option :default_push_front" do
     end
   end
 
-  context "when :default_push_front is set to false" do
-    subject(:record) { create(:no_default_push_front_model, position: position) }
+  context "when :auto_set is set to false" do
+    subject(:record) { create(:no_auto_set_model, position: position) }
     let(:position) { nil }
 
     context "without records" do

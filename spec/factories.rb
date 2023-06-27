@@ -7,8 +7,9 @@ FactoryBot.define do
     sequence(:name, "a")
 
     factory :no_validation_model, class: NoValidationModel
-    factory :no_default_push_front_model, class: NoDefaultPushFrontModel
-    factory :custom_scope_name_model, class: CustomScopeNameModel
+    factory :no_auto_set_model, class: NoDefaultPushFrontModel
+    factory :from_model, class: FromModel
+    factory :decremental_sequence_model, class: DecrementalSequenceModel
   end
 
   factory :model_with_one_scope, class: ModelWithOneScope do
@@ -27,5 +28,10 @@ FactoryBot.define do
       position { rand(10) }
       to_create { |instance| instance.save(validate: false) }
     end
+
+    factory :no_validation_model_with_many_scopes, class: NoValidationModelWithManyScopes
+    factory :decremental_sequence_no_validation_model_with_many_scopes,
+            class: DecrementalSequenceNoValidationModelWithManyScopes
+    factory :decremental_sequence_model_with_many_scopes, class: DecrementalSequenceModelWithManyScopes
   end
 end
