@@ -72,6 +72,33 @@ jobs:
   #     - name: Run RSpec
   #       run: bundle exec rspec -fd
 
+  pre_ci:
+      name: Prepare CI environment
+      runs-on: ubuntu-latest
+      outputs:
+        branch: ${{ steps.extract_branch.outputs.branch }}
+      steps:
+        - name: Checkout Project
+          uses: actions/checkout@v3
+          with:
+            # We need to fetch with a depth of 2 for pull_request so we can do HEAD^2
+            fetch-depth: 2
+
+        - name: Extract branch name
+          id: extract_branch
+          shell: bash
+          run: |
+            TMP_PULL_HEAD_REF="${{ github.head_ref }}"
+            TMP_GITHUB_REF="${GITHUB_REF#refs/heads/}"
+            EXPORT_VALUE=""
+            if [ "${TMP_PULL_HEAD_REF}" != "" ]
+            then
+                EXPORT_VALUE="${TMP_PULL_HEAD_REF}"
+            else
+                EXPORT_VALUE="${TMP_GITHUB_REF}"
+            fi
+            echo "##[set-output name=branch;]${EXPORT_VALUE}"
+
   coverage:
     name: Test suite for coverage
     # needs: test
@@ -107,13 +134,81 @@ jobs:
       - name: Run RSpec
         run: bundle exec rspec -fd
 
-      - name: Check code coverage
+      - name: Save code coverage
         run: |
-          echo "$( cat ./coverage/.last_run.json )"
-          echo "--"
-          echo "$( cat ./coverage/.last_run.json | egrep "line" )"
-          echo "--"
-          echo "$( cat ./coverage/.last_run.json | grep "line" | grep -oE "[0-9]+\.[0-9]+" )"
+          COVERAGE="$( cat ./coverage/.last_run.json | grep "line" | grep -oE "[0-9]+\.[0-9]+" )"
+          echo "##[set-output name=coverage;]${COVERAGE}"
+
+  badge:
+    name: Generate badge image with test coverage value
+    needs: coverage
+    # if: ${{ github.ref == 'refs/heads/master' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # - uses: actions/checkout@v3
+      #   with:
+      #     ref: badges
+      #     path: coverage
+
+      # Use the output from the `coverage` step
+      - name: Generate the badge SVG image
+        uses: emibcn/badge-action@v2.0.2
+        id: badge
+        with:
+          label: 'Coverage'
+          status: ${{ needs.coverage.outputs.coverage }}
+          color: ${{
+            needs.test.outputs.coverage > 90 && 'green'              ||
+            needs.test.outputs.coverage > 80 && 'yellow,green'       ||
+            needs.test.outputs.coverage > 70 && 'yellow'             ||
+            needs.test.outputs.coverage > 60 && 'orange,yellow'      ||
+            needs.test.outputs.coverage > 50 && 'orange'             ||
+            needs.test.outputs.coverage > 40 && 'red,orange'         ||
+            needs.test.outputs.coverage > 30 && 'red,red,orange'     ||
+            needs.test.outputs.coverage > 20 && 'red,red,red,orange' ||
+            'red' }}
+          path: coverage/test-coverage.svg
+
+      - uses: actions/upload-artifact@v3
+          with:
+            name: my-artifact
+            path: coverage/test-coverage.svg
+
+      # - name: Commit badge
+      #   env:
+      #     BRANCH: ${{ needs.pre_ci.outputs.branch }}
+      #     FILE: 'test-coverage.svg'
+      #   working-directory: ./coverage
+      #   run: |
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
+      #     mkdir -p "${BRANCH}"
+      #     mv "${FILE}" "${BRANCH}"
+      #     git add "${BRANCH}/${FILE}"
+
+      #     # Will give error if badge did not changed
+      #     git commit -m "Add/Update badge" || true
+
+      # - name: Push badge commit
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: badges
+      #     directory: coverage
+
+      # - name: Badge image URL
+      #   id: url
+      #   env:
+      #     BRANCH: ${{ needs.pre_ci.outputs.branch }}
+      #     FILE: 'test-coverage.svg'
+      #     COVERAGE: ${{ needs.test.outputs.coverage-rounded-display }}
+      #   run: |
+      #     URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/coverage/${BRANCH}/${FILE}"
+      #     echo "Badge URL: ${URL}"
+      #     echo "##[set-output name=url;]${URL}"
+      #     echo $URL
 
       # - name: Check code coverage
       #   id: coverage
