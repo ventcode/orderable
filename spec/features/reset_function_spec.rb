@@ -21,8 +21,8 @@ RSpec.describe "Function :reorder" do
     before { ModelWithManyScopes.reorder }
 
     it "reset the positions and keeps the sequential order" do
-      expect(alpha_positions).to eq((0..2).to_a.reverse)
-      expect(beta_positions).to eq((0..2).to_a.reverse)
+      expect(alpha_positions).to eq((0..2).to_a)
+      expect(beta_positions).to eq((0..2).to_a)
     end
   end
 
@@ -39,8 +39,8 @@ RSpec.describe "Function :reorder" do
       before { NoValidationModelWithManyScopes.reorder }
 
       it "reset the positions and keeps the sequential order" do
-        expect(alpha_positions).to eq((0..2).to_a.reverse)
-        expect(beta_positions).to eq((0..2).to_a.reverse)
+        expect(alpha_positions).to eq((0..2).to_a)
+        expect(beta_positions).to eq((0..2).to_a)
       end
     end
 

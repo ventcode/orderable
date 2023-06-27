@@ -72,17 +72,17 @@ RSpec.describe "on #create" do
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["c", 2, "first"],
+              ["a", 0, "first"],
               ["b", 1, "first"],
-              ["a", 0, "first"]
+              ["c", 2, "first"]
             ]
           )
           .to(
             [
-              ["d", 3, "first"],
-              ["c", 2, "first"],
+              ["a", 0, "first"],
               ["b", 1, "first"],
-              ["a", 0, "first"]
+              ["c", 2, "first"],
+              ["d", 3, "first"]
             ]
           )
       end
@@ -96,17 +96,17 @@ RSpec.describe "on #create" do
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["c", 2, "first"],
+              ["a", 0, "first"],
               ["b", 1, "first"],
-              ["a", 0, "first"]
+              ["c", 2, "first"]
             ]
           )
           .to(
             [
-              ["c", 2, "first"],
-              ["b", 1, "first"],
               ["a", 0, "first"],
-              ["d", 0, "second"]
+              ["d", 0, "second"],
+              ["b", 1, "first"],
+              ["c", 2, "first"]
             ]
           )
       end

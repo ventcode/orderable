@@ -26,7 +26,7 @@ A gem that makes it easy to change the default order of PostgreSQL database rows
   * [Decremental sequence](#decremental-sequence)
 * [License](#license)
 ### Basic usage
-Let's consider the AR **image** model that implements the `orderable` method. Its position field name is set as `position` and it has only 2 properties - `id` and `name`. **Images** table content is presented below.
+Let's consider the AR **image** model that implements the `orderable` method. Its positioning field name is set as `position` and it has only 2 properties - `id` and `label`. **Images** table content is presented below.
 
 | id | name | position |
 |----|-----|----------|
@@ -39,21 +39,22 @@ class Image < ApplicationRecord
   orderable :position
 end
 
-Image.pluck(:name, :position) # => [["A", 1], ["B", 2], ["C", 0]]
-Image.ordered.pluck(:name) # => ["B", "A", "C"]
+Image.pluck(:label, :position) # => [["A", 1], ["B", 2], ["C", 0]]
+Image.ordered.pluck(:label) # => ["C", "A", "B"]
+Image.ordered(:desc).pluck(:label) # => ["B", "A", "C"]
 
 # on create
-image = Image.create(name: "D")
+image = Image.create(label: "D")
 image.position # => 3
-Image.ordered.pluck(:name) # => ["D", B", "A", "C"]
+Image.ordered.pluck(:label) # => ["C", "A", "B", "D"]
 
 # on update
 image.update(position: 2)
-Image.ordered.pluck(:name) # => ["B", "D", "A", "C"]
+Image.ordered.pluck(:label) # => ["C", "A", "D", "B"]
 
 # on destroy
 image.destroy()
-Image.ordered.pluck(:name) # => ["B", "A", "C"]
+Image.ordered.pluck(:label, :position) # => [["C", 0], ["A", 1], ["B", 2]]
 ```
 ### Installation
 
@@ -107,39 +108,49 @@ orderable :orderable_field_name
 | Attribute | Value | Default | Description |
 | - | - | - | - |
 | `scope` | array of symbols | `[]` | scope same as in unique index (uniqueness of this fields combination would be ensured) |
-| `validate` | boolean | `true` | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
-| `auto_set` | boolean | `true` | if `true`, it sets a new record in front of other records unless position field is passed directly |
-|`from`| integer | 0 | base value from which positions are set |
+| `auto_set` | boolean | `true` | if `true` and positioning field is not specified it on create inserts a new record on the bottom for decremental sequence or on the top for incremental sequence |
 | `sequence` | `:incremental` or `:decremental` | `:incremental` | value used to determine positioning sequence |
+| `validate` | boolean | `true` | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
+|`from`| integer | 0 | base value from which sequence starts |
 
 ### Usage Examples
 
 #### Model with a scope
+Let's say a user has few cover and profile photos. Using *orderable* with scope will allow user to custom order them separately.
 
 ```ruby
 class Image < ActiveRecord::Base
-  orderable :position, scope: :group
+  orderable :position, scope: :type
+
+  scope :profile, -> { where(type: 'profile') }
+  scope :cover, -> { where(type: 'cover') }
 end
 
-Image.pluck(:name, :position, :group) # => [["A", 0, "G_1"], ["E", 1, "G_2"], ["C", 2, "G_1"], ["B", 1, "G_1"], ["D", 0, "G_2"]]
-Image.ordered.pluck(:name) # => [["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["E", 1, "G_2"], ["D", 0, "G_2"]]
+Image.pluck(:label, :position, :type) # => [["A", 0, "profile"], ["E", 1, "cover"], ["C", 2, "profile"], ["B", 1, "profile"], ["D", 0, "cover"]]
+Image.ordered.pluck(:label) # => ["A", "B",  "C", "D", "E"]
+Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
+Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
 
 # on create
-image = Image.create(name: "F", group: "G_1")
+image = Image.create(label: "F", type: "profile")
 image.position # => 3
-Image.ordered.pluck(:name, :position, :group) # => [["F", 3, "G_1"], ["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["E", 1, "G_2"], ["D", 0, "G_2"]]
+Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2], ["F", 3]]
+Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
 
 # on update
-image.update(group: "G_2")
+image.update(type: "cover")
 image.position # => 2
-Image.ordered.pluck(:name, :position, :group) # => [["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["F", 2, "G_2"], ["E", 1, "G_2"], ["D", 0, "G_2"]]
+Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
+Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1], ["F", 2]]
 
 image.update(position: 1)
-Image.ordered.pluck(:name, :position, :group) # => [["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["E", 2, "G_2"], ["F", 1, "G_2"], ["D", 0, "G_2"]]
+Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
+Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["F", 1], ["E", 2]]
 
 # on destroy
 image.destroy()
-Image.ordered.pluck(:name, :position, :group) # => [["C", 2, "G_1"], ["B", 1, "G_1"],  ["A", 0, "G_1"], ["E", 1, "G_2"], ["D", 0, "G_2"]]
+Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
+Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
 ```
 #### Default push front
 
@@ -148,17 +159,20 @@ class Image < ActiveRecord::Base
   orderable :position, auto_set: true # by default
 end
 
+image= Image.create(label: "A") # => OK
+image.position # => 0
+image= Image.create(label: "B") # => OK
+Image.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1]]
+
+
 class Post < ActiveRecord::Base
   orderable :position, auto_set: false
 end
 
-image= Image.create(name: "A") # => OK
-image.position # => 0
-
 Post.create(title: "A") # => validation error (position is not specified)
 Post.create(title: "A", position: 0) # => OK
 Post.create(title: "B", position: 0) # => OK
-Post.ordered.pluck(:title, :position) # => [["A", 1], ["B", 0]]
+Post.ordered.pluck(:title, :position) # => [["B", 0], ["A", 1]]
 ```
 #### Disabling validation
 
@@ -167,15 +181,16 @@ class Image < ActiveRecord::Base
   orderable :position, validation: true # by default
 end
 
+Image.count # => 0
+Image.create(label: "A", position: -1)  # => validation error (cannot be negative)
+Image.create(label: "A", position: 1) # =>  validation error (no image with position 0)
+
+
 class Post < ActiveRecord::Base
   orderable :position, validation: false
 end
 
-Image.count # => 0
 Post.count # => 0
-
-Image.create(name: "A", position: -1)  # => validation error (cannot be negative)
-Image.create(name: "A", position: 1) # =>  validation error (no image with position 0)
 Post.create(title: "A title", position: -1) # => OK
 ```
 #### Setting from value
@@ -185,9 +200,9 @@ class Image < ActiveRecord::Base
   orderable :position, from: 10
 end
 
-Image.create(name: "A")
-Image.create(name: "B")
-Image.ordered.pluck(:name, :position) # => [["B", 11], ["A", 10]]
+Image.create(label: "A")
+Image.create(label: "B")
+Image.ordered.pluck(:label, :position) # => [["A", 10], ["B", 11]]
 ```
 
 ### Decremental sequence
@@ -197,10 +212,10 @@ class Image < ActiveRecord::Base
   orderable :position, from: 10, sequence: :decremental
 end
 
-Image.create(name: "A")
-Image.create(name: "B")
-Image.create(name: "C")
-Image.ordered.pluck(:name, :position) # => [["C", 8], ["B", 9], ["A", 10]]
+Image.create(label: "A")
+Image.create(label: "B")
+Image.create(label: "C")
+Image.ordered.pluck(:label, :position) # => [["C", 8], ["B", 9], ["A", 10]]
 ```
 
 ## License
