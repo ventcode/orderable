@@ -244,7 +244,7 @@ RSpec.describe "on #update" do
           )
       end
 
-      context "when error while mobing record from given scope to another" do
+      context "when error while moving record from given scope to another" do
         before do
           create(:decremental_sequence_model_with_many_scopes, group: "second")
           allow_any_instance_of(Orderable::Executor)
