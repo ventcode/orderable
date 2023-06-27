@@ -35,7 +35,7 @@ RSpec.describe "Configuration option :sequence" do
           it "results in error" do
             expect { subject }.to raise_error(
               ActiveRecord::RecordInvalid,
-              "Validation failed: Position must be less than or equal to 10"
+              "Validation failed: Position must be less than or equal to 10, Position should be between 7 and 10"
             )
           end
         end
