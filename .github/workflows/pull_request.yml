@@ -19,93 +19,27 @@ jobs:
       - name: Run Rubocop
         run: bundle exec rubocop
 
-  # test:
-  #   name: Test suite
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       ruby: ['2.5', '2.6', '2.7', '3.0']
-  #       gemfile: ['gemfiles/activerecord_5.0.2.gemfile',
-  #       'gemfiles/activerecord_6.0.0.gemfile', 
-  #       'gemfiles/activerecord_7.0.0.gemfile']
-  #       exclude:
-  #         - gemfile: 'gemfiles/activerecord_5.2.2.gemfile'
-  #           ruby: '3.0' # rails 5.2 can't run on ruby 3.0
-  #         - gemfile: 'gemfiles/activerecord_5.1.0.gemfile'
-  #           ruby: '3.0' # rails 5.1 can't run on ruby 3.0
-  #         - gemfile: 'gemfiles/activerecord_5.0.2.gemfile'
-  #           ruby: '3.0' # rails 5.0 can't run on ruby 3.0
-  #         - gemfile: 'gemfiles/activerecord_7.0.0.gemfile'
-  #           ruby: '2.6' # rails 7.0 requires ruby 2.7+
-  #         - gemfile: 'gemfiles/activerecord_7.0.0.gemfile'
-  #           ruby: '2.5' # rails 7.0 requires ruby 2.7+
-  #   services:
-  #     postgres:
-  #       image: postgres:14.7
-  #       env:
-  #         POSTGRES_PASSWORD: postgres
-  #       ports:
-  #         - "5432:5432"
-  #       options: >-
-  #         --health-cmd pg_isready
-  #         --health-interval 10s
-  #         --health-timeout 5s
-  #         --health-retries 5
-  #   env:
-  #     RAILS_ENV: test
-  #     POSTGRES_USERNAME: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #     BUNDLE_GEMFILE: ${{ matrix.gemfile }}
-  #     SPEC_DISABLE_DROP_DATABASE: 1
-  #     SCHEMA: structure.sql
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
-
-  #     - name: Setup Ruby
-  #       uses: ruby/setup-ruby@v1
-  #       with:
-  #         ruby-version: ${{ matrix.ruby }}
-  #         bundler-cache: true
-
-  #     - name: Run RSpec
-  #       run: bundle exec rspec -fd
-
-  # pre_ci:
-  #     name: Prepare CI environment
-  #     runs-on: ubuntu-latest
-  #     outputs:
-  #       branch: ${{ steps.extract_branch.outputs.branch }}
-  #     steps:
-  #       - name: Checkout Project
-  #         uses: actions/checkout@v3
-  #         with:
-  #           # We need to fetch with a depth of 2 for pull_request so we can do HEAD^2
-  #           fetch-depth: 2
-
-  #       - name: Extract branch name
-  #         id: extract_branch
-  #         shell: bash
-  #         run: |
-  #           TMP_PULL_HEAD_REF="${{ github.head_ref }}"
-  #           TMP_GITHUB_REF="${GITHUB_REF#refs/heads/}"
-  #           EXPORT_VALUE=""
-  #           if [ "${TMP_PULL_HEAD_REF}" != "" ]
-  #           then
-  #               EXPORT_VALUE="${TMP_PULL_HEAD_REF}"
-  #           else
-  #               EXPORT_VALUE="${TMP_GITHUB_REF}"
-  #           fi
-  #           echo "##[set-output name=branch;]${EXPORT_VALUE}"
-
-  coverage:
-    name: Test suite for coverage
-    # needs: test
-    outputs:
-      coverage: ${{ steps.coverage.outputs.coverage }}
-      percentage_coverage: ${{ steps.coverage.outputs.percentage_coverage }}
+  test:
+    name: Test suite
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ['2.5', '2.6', '2.7', '3.0']
+        gemfile: ['gemfiles/activerecord_5.0.2.gemfile',
+        'gemfiles/activerecord_6.0.0.gemfile', 
+        'gemfiles/activerecord_7.0.0.gemfile']
+        exclude:
+          - gemfile: 'gemfiles/activerecord_5.2.2.gemfile'
+            ruby: '3.0' # rails 5.2 can't run on ruby 3.0
+          - gemfile: 'gemfiles/activerecord_5.1.0.gemfile'
+            ruby: '3.0' # rails 5.1 can't run on ruby 3.0
+          - gemfile: 'gemfiles/activerecord_5.0.2.gemfile'
+            ruby: '3.0' # rails 5.0 can't run on ruby 3.0
+          - gemfile: 'gemfiles/activerecord_7.0.0.gemfile'
+            ruby: '2.6' # rails 7.0 requires ruby 2.7+
+          - gemfile: 'gemfiles/activerecord_7.0.0.gemfile'
+            ruby: '2.5' # rails 7.0 requires ruby 2.7+
     services:
       postgres:
         image: postgres:14.7
@@ -122,6 +56,8 @@ jobs:
       RAILS_ENV: test
       POSTGRES_USERNAME: postgres
       POSTGRES_PASSWORD: postgres
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+      SPEC_DISABLE_DROP_DATABASE: 1
       SCHEMA: structure.sql
     steps:
       - name: Checkout repository
@@ -130,95 +66,8 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
       - name: Run RSpec
         run: bundle exec rspec -fd
-
-      - name: Save code coverage
-        id: coverage
-        run: |
-          COVERAGE="$( cat ./coverage/.last_run.json | grep "line" | grep -oE "[0-9]+\.[0-9]+" )"
-          echo "##[set-output name=coverage;]${COVERAGE}"
-          echo "##[set-output name=percentage_coverage;]${COVERAGE}%"
-
-  badge:
-    name: Generate badge image with test coverage value
-    needs: coverage
-    # if: ${{ github.ref == 'refs/heads/master' }}
-
-    runs-on: ubuntu-latest
-
-    steps:
-      # - uses: actions/checkout@v3
-      #   with:
-      #     ref: badges
-      #     path: coverage
-
-      # Use the output from the `coverage` step
-      - name: Generate the badge SVG image
-        uses: emibcn/badge-action@v2.0.2
-        id: badge
-        with:
-          label: 'Coverage'
-          status: ${{ needs.coverage.outputs.percentage_coverage }}
-          color: ${{
-            needs.coverage.outputs.coverage > 90 && 'green'              ||
-            needs.coverage.outputs.coverage > 80 && 'yellow,green'       ||
-            needs.coverage.outputs.coverage > 70 && 'yellow'             ||
-            needs.coverage.outputs.coverage > 60 && 'orange,yellow'      ||
-            needs.coverage.outputs.coverage > 50 && 'orange'             ||
-            needs.coverage.outputs.coverage > 40 && 'red,orange'         ||
-            needs.coverage.outputs.coverage > 30 && 'red,red,orange'     ||
-            needs.coverage.outputs.coverage > 20 && 'red,red,red,orange' ||
-            'red' }}
-          path: ./test-coverage.svg
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: my-artifact
-          path: ./test-coverage.svg
-
-      # - name: Commit badge
-      #   env:
-      #     BRANCH: ${{ needs.pre_ci.outputs.branch }}
-      #     FILE: 'test-coverage.svg'
-      #   working-directory: ./coverage
-      #   run: |
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
-      #     mkdir -p "${BRANCH}"
-      #     mv "${FILE}" "${BRANCH}"
-      #     git add "${BRANCH}/${FILE}"
-
-      #     # Will give error if badge did not changed
-      #     git commit -m "Add/Update badge" || true
-
-      # - name: Push badge commit
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: badges
-      #     directory: coverage
-
-      # - name: Badge image URL
-      #   id: url
-      #   env:
-      #     BRANCH: ${{ needs.pre_ci.outputs.branch }}
-      #     FILE: 'test-coverage.svg'
-      #     COVERAGE: ${{ needs.test.outputs.coverage-rounded-display }}
-      #   run: |
-      #     URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/coverage/${BRANCH}/${FILE}"
-      #     echo "Badge URL: ${URL}"
-      #     echo "##[set-output name=url;]${URL}"
-      #     echo $URL
-
-      # - name: Check code coverage
-      #   id: coverage
-      #   env:
-      #     VALUE: "line"
-      #   run: |
-      #     COVERAGE="$( cat ./coverage/.last_run.json | egrep "${VALUE}" | grep -oE '\d+\.\d+' )"
-      #     echo "##[set-output name=coverage;]${COVERAGE}"
-    
-
