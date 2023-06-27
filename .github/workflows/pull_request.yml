@@ -72,32 +72,32 @@ jobs:
   #     - name: Run RSpec
   #       run: bundle exec rspec -fd
 
-  pre_ci:
-      name: Prepare CI environment
-      runs-on: ubuntu-latest
-      outputs:
-        branch: ${{ steps.extract_branch.outputs.branch }}
-      steps:
-        - name: Checkout Project
-          uses: actions/checkout@v3
-          with:
-            # We need to fetch with a depth of 2 for pull_request so we can do HEAD^2
-            fetch-depth: 2
+  # pre_ci:
+  #     name: Prepare CI environment
+  #     runs-on: ubuntu-latest
+  #     outputs:
+  #       branch: ${{ steps.extract_branch.outputs.branch }}
+  #     steps:
+  #       - name: Checkout Project
+  #         uses: actions/checkout@v3
+  #         with:
+  #           # We need to fetch with a depth of 2 for pull_request so we can do HEAD^2
+  #           fetch-depth: 2
 
-        - name: Extract branch name
-          id: extract_branch
-          shell: bash
-          run: |
-            TMP_PULL_HEAD_REF="${{ github.head_ref }}"
-            TMP_GITHUB_REF="${GITHUB_REF#refs/heads/}"
-            EXPORT_VALUE=""
-            if [ "${TMP_PULL_HEAD_REF}" != "" ]
-            then
-                EXPORT_VALUE="${TMP_PULL_HEAD_REF}"
-            else
-                EXPORT_VALUE="${TMP_GITHUB_REF}"
-            fi
-            echo "##[set-output name=branch;]${EXPORT_VALUE}"
+  #       - name: Extract branch name
+  #         id: extract_branch
+  #         shell: bash
+  #         run: |
+  #           TMP_PULL_HEAD_REF="${{ github.head_ref }}"
+  #           TMP_GITHUB_REF="${GITHUB_REF#refs/heads/}"
+  #           EXPORT_VALUE=""
+  #           if [ "${TMP_PULL_HEAD_REF}" != "" ]
+  #           then
+  #               EXPORT_VALUE="${TMP_PULL_HEAD_REF}"
+  #           else
+  #               EXPORT_VALUE="${TMP_GITHUB_REF}"
+  #           fi
+  #           echo "##[set-output name=branch;]${EXPORT_VALUE}"
 
   coverage:
     name: Test suite for coverage
@@ -169,12 +169,12 @@ jobs:
             needs.test.outputs.coverage > 30 && 'red,red,orange'     ||
             needs.test.outputs.coverage > 20 && 'red,red,red,orange' ||
             'red' }}
-          path: coverage/test-coverage.svg
+          path: ./test-coverage.svg
 
       - uses: actions/upload-artifact@v3
         with:
           name: my-artifact
-          path: coverage/test-coverage.svg
+          path: ./test-coverage.svg
 
       # - name: Commit badge
       #   env:
