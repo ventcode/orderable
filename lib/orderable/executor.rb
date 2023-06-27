@@ -18,10 +18,9 @@ module Orderable
     end
 
     def on_create(record)
-      return set_record_on_extremum(record) if auto_set && record[field].nil?
+      return set_record_field_as_extreme(record) if auto_set && record[field].nil?
 
-      records = insert_or_extract_affected_records(record)
-
+      records = affected_records_on_collection_size_change(record)
       push(records)
     end
 
@@ -37,18 +36,17 @@ module Orderable
     end
 
     def on_destroy(record)
-      records = insert_or_extract_affected_records(record)
-
+      records = affected_records_on_collection_size_change(record)
       push(records, by: -step)
     end
 
     def validate_record_position(record)
       return if auto_set && record[field].nil?
 
-      extremum_position = find_extremum_position(record)
-      return if extremum_position.nil?
+      extreme_position = find_extreme_position(record)
+      return if extreme_position.nil?
 
-      range = [from, extremum_position].sort
+      range = [from, extreme_position].sort
       return if record[field]&.between?(*range)
 
       record.errors.add(field, :inclusion, message: "should be between #{range.join(' and ')}")
@@ -74,13 +72,13 @@ module Orderable
     def push_to_another_scope(record)
       adjust_in_previous_scope(record)
       if auto_set && field_not_changed?(record)
-        set_record_on_extremum(record)
+        set_record_field_as_extreme(record)
       else
         adjust_in_current_scope(record)
       end
     end
 
-    def set_record_on_extremum(record)
+    def set_record_field_as_extreme(record)
       records = model.where(scope_query(record))
       extreme_position = records.send(extremum, field)
       return record[field] = from if extreme_position.blank?
@@ -89,26 +87,22 @@ module Orderable
     end
 
     def adjust_in_current_scope(record)
-      records = insert_or_extract_affected_records(record)
-
+      records = affected_records_on_collection_size_change(record)
       push(records)
     end
 
     def adjust_in_previous_scope(record)
       previous_scope_attributes = attributes_before_update(record)
       value = previous_scope_attributes[field.to_s] + step
-      records = insert_or_extract_affected_records(previous_scope_attributes, value: value)
-
+      records = affected_records_on_collection_size_change(previous_scope_attributes, value: value)
       push(records, by: -step)
     end
 
-    def insert_or_extract_affected_records(record, value: record[field])
+    def affected_records_on_collection_size_change(record, value: record[field])
       return affected_records(record, below: value) if sequence == :decremental
 
       affected_records(record, above: value)
     end
-
-    def add_validation_error; end
 
     def affected_records(record, above: nil, below: nil)
       raise(AttributeError, field) if model.column_for_attribute(field).type != :integer
@@ -139,7 +133,7 @@ module Orderable
       record.attributes.merge(record.changes.transform_values(&:first))
     end
 
-    def find_extremum_position(record)
+    def find_extreme_position(record)
       position = affected_records(record).send(extremum, field)
       return if position.nil?
 
