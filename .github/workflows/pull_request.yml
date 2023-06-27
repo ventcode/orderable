@@ -135,6 +135,7 @@ jobs:
         run: bundle exec rspec -fd
 
       - name: Save code coverage
+        id: coverage
         run: |
           COVERAGE="$( cat ./coverage/.last_run.json | grep "line" | grep -oE "[0-9]+\.[0-9]+" )"
           echo $COVERAGE
@@ -163,7 +164,7 @@ jobs:
         id: badge
         with:
           label: 'Coverage'
-          status: '99.3'
+          status: 99.3
           color: ${{
             needs.test.outputs.coverage > 90 && 'green'              ||
             needs.test.outputs.coverage > 80 && 'yellow,green'       ||
