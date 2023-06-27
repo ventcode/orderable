@@ -172,9 +172,9 @@ jobs:
           path: coverage/test-coverage.svg
 
       - uses: actions/upload-artifact@v3
-          with:
-            name: my-artifact
-            path: coverage/test-coverage.svg
+        with:
+          name: my-artifact
+          path: coverage/test-coverage.svg
 
       # - name: Commit badge
       #   env:
