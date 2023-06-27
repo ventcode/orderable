@@ -112,11 +112,11 @@ jobs:
           echo "$( cat ./coverage/.last_run.json | egrep "${VALUE}" | grep -oE '\d+\.\d+' )"
 
       - name: Check code coverage
-      id: coverage
-      env:
-        VALUE: "line"
-      run: |
-        COVERAGE="$( cat ./coverage/.last_run.json | egrep "${VALUE}" | grep -oE '\d+\.\d+' )"
-        echo "##[set-output name=coverage;]${COVERAGE}"
+        id: coverage
+        env:
+          VALUE: "line"
+        run: |
+          COVERAGE="$( cat ./coverage/.last_run.json | egrep "${VALUE}" | grep -oE '\d+\.\d+' )"
+          echo "##[set-output name=coverage;]${COVERAGE}"
     
 
