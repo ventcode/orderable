@@ -111,7 +111,9 @@ jobs:
         run: |
           echo "$( cat ./coverage/.last_run.json )"
           echo "--"
-          echo "$( cat ./coverage/.last_run.json | grep line )"
+          echo "$( cat ./coverage/.last_run.json | egrep line )"
+          echo "--"
+          echo "$( cat ./coverage/.last_run.json | grep line | grep -oE '\d+\.\d+' )"
 
       # - name: Check code coverage
       #   id: coverage
