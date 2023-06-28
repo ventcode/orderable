@@ -1,6 +1,6 @@
 name: Code test coverage badge
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -49,8 +49,8 @@ jobs:
         id: coverage
         run: |
           COVERAGE="$( cat ./coverage/.last_run.json | grep "line" | grep -oE "[0-9]+\.[0-9]+" )"
-          echo "{coverage}={${COVERAGE}}" >> $GITHUB_OUTPUT
-          echo "{percentage_coverage}={${COVERAGE}%}" >> $GITHUB_OUTPUT
+          echo "coverage=${COVERAGE}" >> $GITHUB_OUTPUT
+          echo "percentage_coverage=${COVERAGE}%" >> $GITHUB_OUTPUT
 
   badge:
     name: Generate badge image and deply to GitHub Pages
