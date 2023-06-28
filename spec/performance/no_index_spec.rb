@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Performance with index" do
+RSpec.describe "Performance no index" do
   before(:all) do
     attrs = (0...100_000).to_a.map do |position|
       "('#{SecureRandom.alphanumeric(8)}', #{position})"

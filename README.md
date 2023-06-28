@@ -163,7 +163,7 @@ photo.destroy()
 Photo.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
 Photo.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
 ```
-#### Default push front
+#### Auto set
 
 ```ruby
 class Image < ActiveRecord::Base
@@ -216,7 +216,7 @@ Image.create(label: "B")
 Image.ordered.pluck(:label, :position) # => [["A", 10], ["B", 11]]
 ```
 
-### Decremental sequence
+#### Decremental sequence
 
 ```ruby
 class Image < ActiveRecord::Base
