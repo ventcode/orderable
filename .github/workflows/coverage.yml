@@ -1,6 +1,6 @@
 name: Code test coverage badge
 on:
-  push:
+  pull-request:
     branches:
       - master
 
