@@ -8,7 +8,6 @@ require "database_cleaner/active_record"
 require "shoulda-matchers"
 require "factory_bot_rails"
 require "ammeter/init"
-require "benchmark"
 require_relative "./factories"
 Dir["./support/*.rb"].sort.each { |file| require file }
 
