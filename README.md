@@ -1,4 +1,5 @@
 # Orderable
+![Test Coverage](https://ventcode.github.io/orderable/test-coverage.svg)
 
 A gem that makes it easy to change the default order of PostgreSQL database rows by the addition of a modifiable integer column.
 

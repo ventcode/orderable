@@ -1,7 +1,6 @@
 name: Code test coverage badge
 on:
-  # TODO later switch to push:
-  pull_request:
+  push:
     branches:
       - master
 
