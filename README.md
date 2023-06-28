@@ -119,7 +119,7 @@ orderable :orderable_field_name
 | Attribute | Value | Default | Description |
 | - | - | - | - |
 | `scope` | array of symbols | `[]` | scope same as in unique index (uniqueness of this fields combination would be ensured) |
-| `auto_set` | boolean | `true` | if `true` and positioning field value is not specified it inserts a new record on the bottom for decremental sequence or on the top for incremental sequence on create |
+| `auto_set` | boolean | `true` | if `true` and positioning field value is not specified, it inserts a new record on the bottom for decremental sequence or on the top for incremental sequence on create |
 | `sequence` | `:incremental` or `:decremental` | `:incremental` | value used to determine positioning sequence |
 | `validate` | boolean | `true` | if `true`, it validates numericality of positioning field value, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
 |`from`| integer | 0 | base value from which sequence starts |
