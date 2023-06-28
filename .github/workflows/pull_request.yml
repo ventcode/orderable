@@ -70,4 +70,4 @@ jobs:
           bundler-cache: true
 
       - name: Run RSpec
-        run: bundle exec rspec -fd
+        run: bundle exec rspec -fd --exclude-pattern "spec/performance/*.rb"

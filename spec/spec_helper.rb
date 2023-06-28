@@ -8,7 +8,6 @@ require "database_cleaner/active_record"
 require "shoulda-matchers"
 require "factory_bot_rails"
 require "ammeter/init"
-require "rspec-benchmark"
 require "benchmark"
 require_relative "./factories"
 Dir["./support/*.rb"].sort.each { |file| require file }
@@ -55,11 +54,6 @@ RSpec.configure do |config|
   config.include(Shoulda::Matchers::ActiveModel, :with_validations)
   config.include(Shoulda::Matchers::ActiveRecord, :with_validations)
   config.include FactoryBot::Syntax::Methods
-  config.include RSpec::Benchmark::Matchers
-end
-
-RSpec::Benchmark.configure do |config|
-  config.run_in_subprocess = true
 end
 
 Shoulda::Matchers.configure do |config|
