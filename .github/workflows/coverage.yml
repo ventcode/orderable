@@ -5,33 +5,6 @@ on:
     branches:
       - master
 jobs:
-  # pre_ci:
-  #     name: Prepare CI environment
-  #     runs-on: ubuntu-latest
-  #     outputs:
-  #       branch: ${{ steps.extract_branch.outputs.branch }}
-  #     steps:
-  #       - name: Checkout Project
-  #         uses: actions/checkout@v3
-  #         with:
-  #           # We need to fetch with a depth of 2 for pull_request so we can do HEAD^2
-  #           fetch-depth: 2
-
-  #       - name: Extract branch name
-  #         id: extract_branch
-  #         shell: bash
-  #         run: |
-  #           TMP_PULL_HEAD_REF="${{ github.head_ref }}"
-  #           TMP_GITHUB_REF="${GITHUB_REF#refs/heads/}"
-  #           EXPORT_VALUE=""
-  #           if [ "${TMP_PULL_HEAD_REF}" != "" ]
-  #           then
-  #               EXPORT_VALUE="${TMP_PULL_HEAD_REF}"
-  #           else
-  #               EXPORT_VALUE="${TMP_GITHUB_REF}"
-  #           fi
-  #           echo "##[set-output name=branch;]${EXPORT_VALUE}"
-
   coverage:
     name: Test suite for coverage
     outputs:
@@ -79,12 +52,8 @@ jobs:
     needs: coverage
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@v3
-      #   with:
-      #     ref: badges
-      #     path: coverage
+      - uses: actions/checkout@v3
 
-      # Use the output from the `coverage` step
       - name: Generate the badge SVG image
         uses: emibcn/badge-action@v2.0.2
         id: badge
@@ -103,51 +72,14 @@ jobs:
             'red' }}
           path: ./test-coverage.svg
 
-      - uses: actions/upload-artifact@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v1
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: my-artifact
           path: ./test-coverage.svg
-
-      # - name: Commit badge
-      #   env:
-      #     BRANCH: ${{ needs.pre_ci.outputs.branch }}
-      #     FILE: 'test-coverage.svg'
-      #   working-directory: ./coverage
-      #   run: |
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
-      #     mkdir -p "${BRANCH}"
-      #     mv "${FILE}" "${BRANCH}"
-      #     git add "${BRANCH}/${FILE}"
-
-      #     # Will give error if badge did not changed
-      #     git commit -m "Add/Update badge" || true
-
-      # - name: Push badge commit
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: badges
-      #     directory: coverage
-
-      # - name: Badge image URL
-      #   id: url
-      #   env:
-      #     BRANCH: ${{ needs.pre_ci.outputs.branch }}
-      #     FILE: 'test-coverage.svg'
-      #     COVERAGE: ${{ needs.test.outputs.coverage-rounded-display }}
-      #   run: |
-      #     URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/coverage/${BRANCH}/${FILE}"
-      #     echo "Badge URL: ${URL}"
-      #     echo "##[set-output name=url;]${URL}"
-      #     echo $URL
-
-      # - name: Check code coverage
-      #   id: coverage
-      #   env:
-      #     VALUE: "line"
-      #   run: |
-      #     COVERAGE="$( cat ./coverage/.last_run.json | egrep "${VALUE}" | grep -oE '\d+\.\d+' )"
-      #     echo "##[set-output name=coverage;]${COVERAGE}"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@main
     
 
