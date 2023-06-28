@@ -53,7 +53,7 @@ jobs:
           echo "##[set-output name=percentage_coverage;]${COVERAGE}%"
 
   badge:
-    name: Generate badge image with test coverage value
+    name: Generate badge image and deply to GitHub Pages
     needs: coverage
     runs-on: ubuntu-latest
     steps:
