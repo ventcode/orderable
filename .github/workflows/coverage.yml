@@ -60,6 +60,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Create directory for badge
+        run: |
+          mkdir ./badge
+
       - name: Generate the badge SVG image
         uses: emibcn/badge-action@v2.0.2
         id: badge
@@ -76,14 +80,14 @@ jobs:
             needs.coverage.outputs.coverage > 30 && 'red,red,orange'     ||
             needs.coverage.outputs.coverage > 20 && 'red,red,red,orange' ||
             'red' }}
-          path: ./test-coverage.svg
+          path: ./badge/test-coverage.svg
 
       - name: Setup Pages
         uses: actions/configure-pages@v1
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./test-coverage.svg
+          path: ./badge
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@main
