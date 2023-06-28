@@ -41,7 +41,6 @@ end
 
 Image.pluck(:label, :position) # => [["A", 1], ["B", 2], ["C", 0]]
 Image.ordered.pluck(:label) # => ["C", "A", "B"]
-Image.ordered(:desc).pluck(:label) # => ["B", "A", "C"]
 
 # on create
 image = Image.create(label: "D")
@@ -55,6 +54,18 @@ Image.ordered.pluck(:label) # => ["C", "A", "D", "B"]
 # on destroy
 image.destroy()
 Image.ordered.pluck(:label, :position) # => [["C", 0], ["A", 1], ["B", 2]]
+```
+
+Notice that you can pass direction `:asc`/`:desc` to `ordered` scope as parameter:
+```ruby
+Image.pluck(:label, :position) # => [["A", 1], ["B", 2], ["C", 0]]
+
+# :asc by default
+Image.ordered.pluck(:label) # => ["C", "A", "B"]
+Image.ordered(:asc).pluck(:label) # => ["C", "A", "B"]
+
+# :desc
+Image.ordered(:desc).pluck(:label) # => ["B", "A", "C"]
 ```
 ### Installation
 
@@ -108,49 +119,49 @@ orderable :orderable_field_name
 | Attribute | Value | Default | Description |
 | - | - | - | - |
 | `scope` | array of symbols | `[]` | scope same as in unique index (uniqueness of this fields combination would be ensured) |
-| `auto_set` | boolean | `true` | if `true` and positioning field is not specified it on create inserts a new record on the bottom for decremental sequence or on the top for incremental sequence |
+| `auto_set` | boolean | `true` | if `true` and positioning field value is not specified it inserts a new record on the bottom for decremental sequence or on the top for incremental sequence on create |
 | `sequence` | `:incremental` or `:decremental` | `:incremental` | value used to determine positioning sequence |
-| `validate` | boolean | `true` | if `true`, it validates numericality of positioning field, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
+| `validate` | boolean | `true` | if `true`, it validates numericality of positioning field value, as well as being in range `<0, M>`, where `M` stands for the biggest positioning field value |
 |`from`| integer | 0 | base value from which sequence starts |
 
 ### Usage Examples
 
 #### Model with a scope
-Let's say a user has few cover and profile photos. Using *orderable* with scope will allow user to custom order them separately.
+Let's say a user has few cover and profile photos. Using *orderable* with scope will allow user to customize their order separately.
 
 ```ruby
-class Image < ActiveRecord::Base
+class Photo < ActiveRecord::Base
   orderable :position, scope: :type
 
   scope :profile, -> { where(type: 'profile') }
   scope :cover, -> { where(type: 'cover') }
 end
 
-Image.pluck(:label, :position, :type) # => [["A", 0, "profile"], ["E", 1, "cover"], ["C", 2, "profile"], ["B", 1, "profile"], ["D", 0, "cover"]]
-Image.ordered.pluck(:label) # => ["A", "B",  "C", "D", "E"]
-Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
-Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
+Photo.pluck(:label, :position, :type) # => [["A", 0, "profile"], ["E", 1, "cover"], ["C", 2, "profile"], ["B", 1, "profile"], ["D", 0, "cover"]]
+Photo.ordered.pluck(:label) # => ["A", "B",  "C", "D", "E"]
+Photo.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
+Photo.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
 
 # on create
-image = Image.create(label: "F", type: "profile")
-image.position # => 3
-Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2], ["F", 3]]
-Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
+photo = Photo.create(label: "F", type: "profile")
+photo.position # => 3
+Photo.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2], ["F", 3]]
+Photo.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
 
 # on update
-image.update(type: "cover")
-image.position # => 2
-Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
-Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1], ["F", 2]]
+photo.update(type: "cover")
+photo.position # => 2
+Photo.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
+Photo.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1], ["F", 2]]
 
-image.update(position: 1)
-Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
-Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["F", 1], ["E", 2]]
+photo.update(position: 1)
+Photo.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
+Photo.cover.ordered.pluck(:label, :position) # => [["D", 0], ["F", 1], ["E", 2]]
 
 # on destroy
-image.destroy()
-Image.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
-Image.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
+photo.destroy()
+Photo.profile.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1],  ["C", 2]]
+Photo.cover.ordered.pluck(:label, :position) # => [["D", 0], ["E", 1]]
 ```
 #### Default push front
 
@@ -159,9 +170,9 @@ class Image < ActiveRecord::Base
   orderable :position, auto_set: true # by default
 end
 
-image= Image.create(label: "A") # => OK
+image = Image.create(label: "A") # => OK
 image.position # => 0
-image= Image.create(label: "B") # => OK
+image = Image.create(label: "B") # => OK
 Image.ordered.pluck(:label, :position) # => [["A", 0], ["B", 1]]
 
 

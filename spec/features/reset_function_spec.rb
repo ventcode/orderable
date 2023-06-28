@@ -28,40 +28,86 @@ RSpec.describe "Function :reorder" do
 
   context "without validation" do
     context "with incremental sequence" do
-      before do
-        create_list(:no_validation_model_with_many_scopes, 3, :random_position)
-        create_list(:no_validation_model_with_many_scopes, 3, :random_position, kind: "beta")
+      context "with random positions" do
+        before do
+          create_list(:no_validation_model_with_many_scopes, 3, :random_position)
+          create_list(:no_validation_model_with_many_scopes, 3, :random_position, kind: "beta")
+        end
+
+        let(:alpha_positions) { NoValidationModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position) }
+        let(:beta_positions) { NoValidationModelWithManyScopes.ordered.where(kind: "beta").pluck(:position) }
+
+        before { NoValidationModelWithManyScopes.reorder }
+
+        it "reset the positions and keeps the sequential order" do
+          expect(alpha_positions).to eq((0..2).to_a)
+          expect(beta_positions).to eq((0..2).to_a)
+        end
       end
 
-      let(:alpha_positions) { NoValidationModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position) }
-      let(:beta_positions) { NoValidationModelWithManyScopes.ordered.where(kind: "beta").pluck(:position) }
+      context "with preset positions" do
+        before do
+          [1, 4, 8].each { |position| create(:no_validation_model_with_many_scopes, position: position) }
+          [2, 5, 9].each { |position| create(:no_validation_model_with_many_scopes, position: position, kind: "beta") }
+        end
 
-      before { NoValidationModelWithManyScopes.reorder }
+        let(:alpha_positions) { NoValidationModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position) }
+        let(:beta_positions) { NoValidationModelWithManyScopes.ordered.where(kind: "beta").pluck(:position) }
 
-      it "reset the positions and keeps the sequential order" do
-        expect(alpha_positions).to eq((0..2).to_a)
-        expect(beta_positions).to eq((0..2).to_a)
+        before { NoValidationModelWithManyScopes.reorder }
+
+        it "reset the positions and keeps the sequential order" do
+          expect(alpha_positions).to eq((0..2).to_a)
+          expect(beta_positions).to eq((0..2).to_a)
+        end
       end
     end
 
     context "with decremental sequence" do
-      before do
-        create_list(:decremental_sequence_no_validation_model_with_many_scopes, 3, :random_position)
-        create_list(:decremental_sequence_no_validation_model_with_many_scopes, 3, :random_position, kind: "beta")
+      context "with random positions" do
+        before do
+          create_list(:decremental_sequence_no_validation_model_with_many_scopes, 3, :random_position)
+          create_list(:decremental_sequence_no_validation_model_with_many_scopes, 3, :random_position, kind: "beta")
+        end
+
+        let(:alpha_positions) do
+          DecrementalSequenceNoValidationModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position)
+        end
+        let(:beta_positions) do
+          DecrementalSequenceNoValidationModelWithManyScopes.ordered.where(kind: "beta").pluck(:position)
+        end
+
+        before { DecrementalSequenceNoValidationModelWithManyScopes.reorder }
+
+        it "reset the positions and keeps the sequential order" do
+          expect(alpha_positions).to eq((8..10).to_a)
+          expect(beta_positions).to eq((8..10).to_a)
+        end
       end
 
-      let(:alpha_positions) do
-        DecrementalSequenceNoValidationModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position)
-      end
-      let(:beta_positions) do
-        DecrementalSequenceNoValidationModelWithManyScopes.ordered.where(kind: "beta").pluck(:position)
-      end
+      context "with preset positions" do
+        before do
+          [8, 4, -2].each do |position|
+            create(:decremental_sequence_no_validation_model_with_many_scopes, position: position)
+          end
+          [7, 2, -6].each do |position|
+            create(:decremental_sequence_no_validation_model_with_many_scopes, position: position, kind: "beta")
+          end
+        end
 
-      before { DecrementalSequenceNoValidationModelWithManyScopes.reorder }
+        let(:alpha_positions) do
+          DecrementalSequenceNoValidationModelWithManyScopes.ordered.where(kind: "alpha").pluck(:position)
+        end
+        let(:beta_positions) do
+          DecrementalSequenceNoValidationModelWithManyScopes.ordered.where(kind: "beta").pluck(:position)
+        end
 
-      it "reset the positions and keeps the sequential order" do
-        expect(alpha_positions).to eq((8..10).to_a)
-        expect(beta_positions).to eq((8..10).to_a)
+        before { DecrementalSequenceNoValidationModelWithManyScopes.reorder }
+
+        it "reset the positions and keeps the sequential order" do
+          expect(alpha_positions).to eq((8..10).to_a)
+          expect(beta_positions).to eq((8..10).to_a)
+        end
       end
     end
   end
