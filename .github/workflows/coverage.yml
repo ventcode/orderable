@@ -32,21 +32,6 @@ jobs:
   #           fi
   #           echo "##[set-output name=branch;]${EXPORT_VALUE}"
 
-  lint:
-    name: Static code analysis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-
-      - name: Run Rubocop
-        run: bundle exec rubocop
-
   coverage:
     name: Test suite for coverage
     outputs:
