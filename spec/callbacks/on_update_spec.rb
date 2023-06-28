@@ -92,18 +92,18 @@ RSpec.describe "on #update" do
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["c", 2, "first"],
-              ["b", 1, "first"],
               ["a", 0, "first"],
-              ["d", 0, "second"]
+              ["d", 0, "second"],
+              ["b", 1, "first"],
+              ["c", 2, "first"]
             ]
           )
           .to(
             [
-              ["c", 3, "first"],
-              ["b", 2, "first"],
+              ["a", 0, "first"],
               ["d", 1, "first"], # updated record
-              ["a", 0, "first"]
+              ["b", 2, "first"],
+              ["c", 3, "first"]
             ]
           )
       end
@@ -116,18 +116,18 @@ RSpec.describe "on #update" do
             .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
             .from(
               [
-                ["c", 2, "first"],
-                ["b", 1, "first"],
                 ["a", 0, "first"],
-                ["d", 0, "second"]
+                ["d", 0, "second"],
+                ["b", 1, "first"],
+                ["c", 2, "first"]
               ]
             )
             .to(
               [
-                ["c", 3, "first"],
-                ["d", 2, "first"], # updated record
+                ["a", 0, "first"],
                 ["b", 1, "first"],
-                ["a", 0, "first"]
+                ["d", 2, "first"], # updated record
+                ["c", 3, "first"]
               ]
             )
         end
@@ -143,18 +143,18 @@ RSpec.describe "on #update" do
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["c", 2, "first"],
-              ["b", 1, "first"],
               ["a", 0, "first"],
-              ["d", 0, "second"]
+              ["d", 0, "second"],
+              ["b", 1, "first"],
+              ["c", 2, "first"]
             ]
           )
           .to(
             [
-              ["d", 3, "first"], # updated record
-              ["c", 2, "first"],
+              ["a", 0, "first"],
               ["b", 1, "first"],
-              ["a", 0, "first"]
+              ["c", 2, "first"],
+              ["d", 3, "first"] # updated record
             ]
           )
       end
@@ -169,18 +169,18 @@ RSpec.describe "on #update" do
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["d", 3, "first"],
-              ["c", 2, "first"],
+              ["a", 0, "first"],
               ["b", 1, "first"],
-              ["a", 0, "first"]
+              ["c", 2, "first"],
+              ["d", 3, "first"]
             ]
           )
           .to(
             [
-              ["new name", 3, "first"],
-              ["c", 2, "first"],
+              ["a", 0, "first"],
               ["b", 1, "first"],
-              ["a", 0, "first"]
+              ["c", 2, "first"],
+              ["new name", 3, "first"]
             ]
           )
       end
@@ -195,18 +195,18 @@ RSpec.describe "on #update" do
           .to change { ModelWithManyScopes.ordered.pluck(:name, :position, :group) }
           .from(
             [
-              ["c", 3, "first"],
-              ["d", 2, "first"],
+              ["a", 0, "first"],
               ["b", 1, "first"],
-              ["a", 0, "first"]
+              ["d", 2, "first"],
+              ["c", 3, "first"]
             ]
           )
           .to(
             [
-              ["c", 2, "first"],
-              ["b", 1, "first"],
               ["a", 0, "first"],
-              ["d", 0, "second"] # updated record
+              ["d", 0, "second"], # updated record
+              ["b", 1, "first"],
+              ["c", 2, "first"]
             ]
           )
       end
@@ -408,23 +408,23 @@ RSpec.describe "on #update" do
             .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position, :kind) }
             .from(
               [
-                ["f", 9, "first"],
-                ["e", 8, "first"],
-                ["d", 7, "first"],
-                ["c", 2, "first"],
-                ["b", 1, "first"],
+                ["g", 0, "second"],
                 ["a", 0, "first"],
-                ["g", 0, "second"]
+                ["b", 1, "first"],
+                ["c", 2, "first"],
+                ["d", 7, "first"],
+                ["e", 8, "first"],
+                ["f", 9, "first"]
               ]
             ).to(
               [
-                ["g", 10, "first"],
-                ["f", 9, "first"],
-                ["e", 8, "first"],
-                ["d", 7, "first"],
-                ["c", 2, "first"],
+                ["a", 0, "first"],
                 ["b", 1, "first"],
-                ["a", 0, "first"]
+                ["c", 2, "first"],
+                ["d", 7, "first"],
+                ["e", 8, "first"],
+                ["f", 9, "first"],
+                ["g", 10, "first"]
               ]
             )
         end
@@ -438,23 +438,23 @@ RSpec.describe "on #update" do
             .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position, :kind) }
             .from(
               [
-                ["f", 9, "first"],
-                ["e", 8, "first"],
-                ["d", 7, "first"],
-                ["c", 2, "first"],
-                ["b", 1, "first"],
+                ["g", 0, "second"],
                 ["a", 0, "first"],
-                ["g", 0, "second"]
+                ["b", 1, "first"],
+                ["c", 2, "first"],
+                ["d", 7, "first"],
+                ["e", 8, "first"],
+                ["f", 9, "first"]
               ]
             ).to(
               [
-                ["f", 10, "first"],
-                ["e", 9, "first"],
-                ["d", 8, "first"],
-                ["c", 3, "first"],
-                ["b", 2, "first"],
+                ["a", 0, "first"],
                 ["g", 1, "first"],
-                ["a", 0, "first"]
+                ["b", 2, "first"],
+                ["c", 3, "first"],
+                ["d", 8, "first"],
+                ["e", 9, "first"],
+                ["f", 10, "first"]
               ]
             )
         end
@@ -472,23 +472,23 @@ RSpec.describe "on #update" do
             .to change { NoValidationModelWithOneScope.ordered.pluck(:name, :position, :kind) }
             .from(
               [
-                ["g", 10, "first"],
-                ["f", 9, "first"],
-                ["e", 8, "first"],
-                ["d", 7, "first"],
-                ["c", 2, "first"],
+                ["a", 0, "first"],
                 ["b", 1, "first"],
-                ["a", 0, "first"]
+                ["c", 2, "first"],
+                ["d", 7, "first"],
+                ["e", 8, "first"],
+                ["f", 9, "first"],
+                ["g", 10, "first"]
               ]
             ).to(
               [
-                ["f", 10, "first"],
-                ["e", 9, "first"],
-                ["d", 8, "first"],
-                ["c", 3, "first"],
-                ["b", 2, "first"],
+                ["a", 0, "first"],
                 ["g", 1, "first"],
-                ["a", 0, "first"]
+                ["b", 2, "first"],
+                ["c", 3, "first"],
+                ["d", 8, "first"],
+                ["e", 9, "first"],
+                ["f", 10, "first"]
               ]
             )
         end
