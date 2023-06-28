@@ -1,6 +1,6 @@
 name: Code test coverage badge
 on:
-  pull_request:
+  push:
     branches:
       - master
 
@@ -65,7 +65,6 @@ jobs:
 
       - name: Generate the badge SVG image
         uses: emibcn/badge-action@v2.0.2
-        id: badge
         with:
           label: 'Coverage'
           status: ${{ needs.coverage.outputs.percentage_coverage }}
