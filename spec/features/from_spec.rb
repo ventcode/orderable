@@ -11,7 +11,7 @@ RSpec.describe "Configuration option :from" do
 
     it "creates a new record with the highest position" do
       expect(subject.position).to eq(FromModel.maximum(:position))
-      expect(FromModel.ordered.pluck(:position)).to eq([102, 101, 100])
+      expect(FromModel.ordered.pluck(:position)).to eq([100, 101, 102])
     end
 
     context "when position attribute given" do
@@ -19,7 +19,7 @@ RSpec.describe "Configuration option :from" do
 
       it "creates a new record with a correct position" do
         expect(subject.position).to eq(101)
-        expect(FromModel.ordered.pluck(:position)).to eq([102, 101, 100])
+        expect(FromModel.ordered.pluck(:position)).to eq([100, 101, 102])
       end
     end
   end
@@ -57,7 +57,7 @@ RSpec.describe "Configuration option :from" do
     it "removes the record and shifts others correctly" do
       expect(subject.destroy).to be_present
       expect { subject.reload }.to raise_error(ActiveRecord::RecordNotFound)
-      expect(FromModel.ordered.pluck(:position)).to eq([101, 100])
+      expect(FromModel.ordered.pluck(:position)).to eq([100, 101])
     end
   end
 end

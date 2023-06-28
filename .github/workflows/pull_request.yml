@@ -20,7 +20,7 @@ jobs:
         run: bundle exec rubocop
 
   test:
-    name: Test suite and coverage
+    name: Test suite
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

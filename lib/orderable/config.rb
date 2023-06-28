@@ -22,10 +22,6 @@ module Orderable
       super(DEFAULTS.merge(normalized_options))
     end
 
-    def order_direction
-      SEQUENCES.fetch(sequence)
-    end
-
     private
 
     def normalize_options!(options)
