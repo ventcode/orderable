@@ -33,6 +33,7 @@ jobs:
       POSTGRES_USERNAME: postgres
       POSTGRES_PASSWORD: postgres
       SCHEMA: structure.sql
+      PERFORMANCE_TESTS_DISABLED: 1
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -43,7 +44,7 @@ jobs:
           bundler-cache: true
 
       - name: Run RSpec
-        run: bundle exec rspec -fd --exclude-pattern "spec/performance/*.rb"
+        run: bundle exec rspec -fd
 
       - name: Save code coverage
         id: coverage

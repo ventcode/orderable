@@ -1,7 +1,6 @@
 name: Pull request workflow
 on:
   pull_request:
-    types: [review_requested, ready_for_review]
     branches:
       - master
 jobs:
@@ -59,6 +58,7 @@ jobs:
       POSTGRES_PASSWORD: postgres
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       SPEC_DISABLE_DROP_DATABASE: 1
+      PERFORMANCE_TESTS_DISABLED: 1
       SCHEMA: structure.sql
     steps:
       - name: Checkout repository
@@ -71,4 +71,4 @@ jobs:
           bundler-cache: true
 
       - name: Run RSpec
-        run: bundle exec rspec -fd --exclude-pattern "spec/performance/*.rb"
+        run: bundle exec rspec -fd

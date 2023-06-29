@@ -36,6 +36,8 @@ RSpec.configure do |config|
     end
   end
 
+  config.exclude_pattern = "spec/performance/*.rb" if ENV["PERFORMANCE_TESTS_DISABLED"] == "1"
+
   config.before(:suite) do
     Rake::Task["db:create"].invoke
     Rake::Task["db:migrate"].invoke
