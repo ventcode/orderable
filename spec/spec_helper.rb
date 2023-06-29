@@ -36,6 +36,8 @@ RSpec.configure do |config|
     end
   end
 
+  config.exclude_pattern = "spec/performance/*.rb" if ENV["PERFORMANCE_TESTS_DISABLED"] == "1"
+
   config.before(:suite) do
     Rake::Task["db:create"].invoke
     Rake::Task["db:migrate"].invoke
@@ -61,4 +63,10 @@ Shoulda::Matchers.configure do |config|
     with.library :active_record
     with.library :active_model
   end
+end
+
+def elapsed_time(&block)
+  Benchmark.measure do
+    block.call
+  end.real
 end

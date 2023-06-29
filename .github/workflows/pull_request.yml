@@ -58,6 +58,7 @@ jobs:
       POSTGRES_PASSWORD: postgres
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       SPEC_DISABLE_DROP_DATABASE: 1
+      PERFORMANCE_TESTS_DISABLED: 1
       SCHEMA: structure.sql
     steps:
       - name: Checkout repository
